@@ -1,0 +1,575 @@
+<%+header%>
+
+<link rel="stylesheet" type="text/css" media="screen" href="<%=resource%>/css/jquery-ui.css" />
+<link rel="stylesheet" type="text/css" media="screen" href="<%=resource%>/css/jquery.dataTables.css" />
+
+<script type="text/javascript" src="<%=resource%>/js/black/jquery-ui.min.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/black/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/apstatus.js"></script>
+
+
+<!--
+<script type="text/javascript" src="<%=resource%>/js/jquery.ui.ext.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/jquery.ui.cmx.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/jquery.ext.verify.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/jquery.dataTables.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/jquery.dataTables.ext.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/underscore.string.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/gozila.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/countryChannel.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/apstatus.js"></script>
+-->
+
+
+<div class="cbi-map" id="cbi-apstatus">
+	<h2><a id="content" name="content">AP管理</a></h2>
+	<div class="cbi-map-descr"></div>
+	
+	<fieldset class="cbi-section">
+		<table id="AP_list">
+			<thead>
+				<tr>
+					<td colid="0">序号</td>
+					<td colid="1">AP</td>
+					<td colid="2">描述</td>
+					<td colid="3">IP地址</td>
+					<td colid="4">当前用户数</td>
+					<td colid="5">Radio</td>
+					<td colid="6">邻居AP数</td>
+					<td colid="7">运行时间</td>
+					<td colid="8">上线时间</td>
+					<td colid="9">固件版本</td>
+					<td colid="10">状态</td>
+					<td colid="11">
+						<span class="checkall">全选/反选</span>
+					</td>
+				</tr>
+			</thead>
+		</table>
+		<div class="btn_function">
+			<input type="button" value="批量修改" class="cbi-button edit"/>
+			<input type="button" value="重启AP" class="cbi-button restart"/>
+			<input type="button" value="升级固件" class="cbi-button upgrade"/>
+			<input type="button" value="下载AP日志" class="cbi-button downloadaplog"/>
+			<input type="button" value="恢复出厂配置" class="cbi-button resetAPs"/>
+			<input type="button" value="删除" class="cbi-button deleteAPs"/>
+		</div>
+	</fieldset>
+</div>
+
+
+<!-- 重启 -->
+<div id="restartAP" style="display:none;">
+	<fieldset>
+		<p>系统将会重启已选AP，重启会导致已经连接AP的用户短暂掉线.<br />是否确认重启？</p>
+	</fieldset>
+</div>
+
+<!-- 升级 -->
+<div id="upgradeAP" style="display:none;">
+	<fieldset>
+		<legend>最新固件版本：</legend>
+		<ul id="ul_VerAcFirw"><li>11111</li><li>11111</li><li>11111</li><li>11111</li></ul>
+	</fieldset>
+</div>
+
+<!-- 编辑 -->
+<div id="editAP">
+	<form class="form-dialog">
+		<fieldset style="margin-left:-20px;margin-right:-20px;">
+			<div id="tabs_APConf">
+				<ul>
+					<li><a href="#tabs_APConf_a">AP参数</a></li>
+					<li><a href="#tabs_APConf_b">Radio配置</a></li>
+					<li><a href="#tabs_APConf_c">日志</a></li>
+				</ul>
+				<div id="tabs_APConf_a">
+					<fieldset class="field-d">
+						<legend>基本配置</legend>
+
+						<div class="cbi-value clearfix">
+							<label class="cbi-value-title" for="edit__nick_name">AP描述名</label>
+							<div class="cbi-value-field">
+								<input type="text" id="edit__nick_name" verify="apname" />
+								<span class="icon-tip" title="输入字符串长度小于32个ASCII字符."></span>
+							</div>
+						</div>
+						<div class="cbi-value clearfix">
+							<label class="cbi-value-title" for="edit__ip_distribute">地址获取</label>
+							<div class="cbi-value-field">
+								<select id="edit__ip_distribute">
+									<option value="static">静态配置</option>
+									<option value="dhcp">DHCP分配</option>
+								</select>
+							</div>
+						</div>
+						<div class="cbi-value clearfix">
+							<label class="cbi-value-title" for="edit__ip_address">IP地址</label>
+							<div class="cbi-value-field">
+								<input id="edit__ip_address" type="text" verify="ip" />
+							</div>
+						</div>
+						<div class="cbi-value clearfix">
+							<label class="cbi-value-title" for="edit__netmask">掩码</label>
+							<div class="cbi-value-field">
+								<input id="edit__netmask" type="text" verify="mask" />
+							</div>
+						</div>
+						<div class="cbi-value clearfix">
+							<label class="cbi-value-title" for="edit__gateway">网关</label>
+							<div class="cbi-value-field">
+								<input id="edit__gateway" type="text" verify="gateway" />
+							</div>
+						</div>
+						<div class="cbi-value clearfix">
+							<label class="cbi-value-title" for="edit__ac_host">控制器地址</label>
+							<div class="cbi-value-field">
+								<input id="edit__ac_host" verify="achost" type="text" />
+							</div>
+						</div>
+						<div class="cbi-value clearfix" style="display:none;">
+							<label class="cbi-value-title">其他</label>
+							<div class="cbi-value-field">
+								<label><input id="edit__remote_debug" type="checkbox" value="1" />关闭远程调试接口</label>
+							</div>
+							<div class="cbi-value-field">
+								<label><input id="edit__light" type="checkbox" value="1" />关闭AP的信号指示灯</label>
+							</div>
+							<div class="cbi-value-field">
+								<label><input id="edit__dhcp_auto" type="checkbox" value="1" />禁止AP自动切换成DHCP</label>
+							</div>
+						</div>
+					</fieldset>
+					
+					<fieldset class="field-d">
+						<legend>高级配置</legend>
+						<div class="cbi-value clearfix">
+							<label class="cbi-value-title" for="edit__work_mode">工作模式</label>
+							<div class="cbi-value-field">
+								<select id="edit__work_mode">
+									<option selected="selected" value="hybrid">Hybrid</option>
+									<option value="normal">Normal</option>
+									<option value="monitor">Monitor</option>
+								</select>
+							</div>
+						</div>
+						<div class="cbi-value mode_hybrid clearfix">
+							<label class="cbi-value-title" for="edit__hybrid_scan_cycle">信道扫描周期</label>
+							<div class="cbi-value-field">
+								<input id="edit__hybrid_scan_cycle" type="text" value="30" verify="numcycle"/>&nbsp;s
+								<span class="icon-tip" title="输入数字1~300."></span>
+							</div>
+						</div>
+						<div class="cbi-value mode_hybrid clearfix">
+							<label class="cbi-value-title" for="edit__hybrid_scan_time">单信道扫描时间</label>
+							<div class="cbi-value-field">
+								<input id="edit__hybrid_scan_time" type="text" value="60" verify="numtime"/>&nbsp;ms
+								<span class="icon-tip" title="输入数字10~300."></span>
+							</div>
+						</div>
+						<div class="cbi-value mode_monitor clearfix">
+							<label class="cbi-value-title" for="edit__monitor_scan_time">单信道扫描时间</label>
+							<div class="cbi-value-field">
+								<input id="edit__monitor_scan_time" type="text" value="200" verify="numtime"/>&nbsp;ms
+								<span class="icon-tip" title="输入数字10~300."></span>
+							</div>
+						</div>
+						<div class="cbi-value mode_normal clearfix">
+							<label class="cbi-value-title">信道扫描范围</label>
+							<div class="cbi-value-field" style="padding-top: 5px;">
+								<label><input id="edit__scan_channels" name="edit__scan_channels" type="radio" checked="checked" value="recommend"/>推荐信道</label>
+							</div>
+							<div class="cbi-value-field">
+								<label><input name="edit__scan_channels" type="radio" value="country"/>国家码对应信道</label>
+							</div>
+							<div class="cbi-value-field">
+								<label><input name="edit__scan_channels" type="radio" value="all"/>所有信道</label>
+							</div>
+						</div>
+					</fieldset>
+				</div>
+				
+				<div id="tabs_APConf_b">
+					<div id="tabs_RadioConf">
+						<ul>
+							<li><a href="#tabs_RadioConf_a">2G</a></li>
+							<li><a href="#tabs_RadioConf_b">5G</a></li>
+						</ul>
+						<div id="tabs_RadioConf_a">
+							<fieldset class="field-d">
+								<legend>基本配置</legend>
+								<div class="cbi-value clearfix">
+									<label class="cbi-value-title" for="edit__radio_2g__switch">启用</label>
+									<div class="cbi-value-field" style="line-height:30px;">
+										<input type="checkbox" id="edit__radio_2g__switch" value="1" />
+									</div>
+								</div>
+								<div class="cbi-value clearfix">
+									<label class="cbi-value-title" for="edit__radio_2g__wireless_protocol">无线协议</label>
+									<div class="cbi-value-field">
+										<select id="edit__radio_2g__wireless_protocol">
+											<option value="b">b</option>
+											<option value="g">g</option>
+											<option value="n">n</option>
+											<option value="bg">bg</option>
+											<option selected="selected" value="bgn">bgn</option>
+										</select>
+									</div>
+								</div>
+								<div class="cbi-value clearfix">
+									<label class="cbi-value-title" for="edit__radio_2g__bandwidth">信道带宽</label>
+									<div class="cbi-value-field">
+										<select id="edit__radio_2g__bandwidth">
+											<option selected="selected" value="auto">auto</option>
+											<option value="20">20</option>
+											<option value="40+">40+</option>
+											<option value="40-">40-</option>
+										</select>
+									</div>
+								</div>
+								<div class="cbi-value clearfix channel_2g_big" style="line-height:30px;">
+									<label class="cbi-value-title">工作信道批量调整</label>
+									<div class="cbi-value-field">
+										<input type="checkbox" class="channel_2g_enable" />
+										<span class="icon-tip" title="批量操作时，勾选后才对工作信道下发配置生效."></span>
+									</div>
+								</div>
+								<div class="cbi-value clearfix">
+									<label class="cbi-value-title" for="edit__radio_2g__channel_id">工作信道</label>
+									<div class="cbi-value-field">
+										<select id="edit__radio_2g__channel_id">
+											<option value="auto">auto</option>
+										</select>
+									</div>
+								</div>
+								<div class="cbi-value clearfix">
+									<label class="cbi-value-title" for="edit__radio_2g__power">功率</label>
+									<div class="cbi-value-field">
+										<select id="edit__radio_2g__power">
+											<option selected="selected" value="auto">auto</option>
+											<option value="3">3</option>
+											<option value="4">4</option>
+											<option value="5">5</option>
+											<option value="6">6</option>
+											<option value="7">7</option>
+											<option value="8">8</option>
+											<option value="9">9</option>
+											<option value="10">10</option>
+											<option value="11">11</option>
+											<option value="12">12</option>
+											<option value="13">13</option>
+											<option value="14">14</option>
+											<option value="15">15</option>
+											<option value="16">16</option>
+											<option value="17">17</option>
+											<option value="18">18</option>
+											<option value="19">19</option>
+											<option value="20">20</option>
+											<option value="21">21</option>
+											<option value="22">22</option>
+											<option value="23">23</option>
+										</select>&nbsp;dBm
+									</div>
+								</div>
+								<div class="cbi-value clearfix">
+									<label class="cbi-value-title" for="edit__radio_2g__users_limit">最大用户数</label>
+									<div class="cbi-value-field">
+										<input id="edit__radio_2g__users_limit" type="text" value="3" verify="num2g"/>
+										<span class="icon-tip" title="输入数字5~50."></span>
+									</div>
+								</div>
+							</fieldset>
+							
+							<fieldset class="field-d">
+								<legend>高级配置</legend>
+								<div class="cbi-value clearfix">
+									<label class="cbi-value-title" for="edit__radio_2g__rts">RTS阈值</label>
+									<div class="cbi-value-field">
+										<input id="edit__radio_2g__rts" type="text" verify="rts2g"/>&nbsp;Byte
+										<span class="icon-tip" title="输入数字1~2347."></span>
+									</div>
+								</div>
+								<div class="cbi-value clearfix">
+									<label class="cbi-value-title" for="edit__radio_2g__beacon">Beacon周期</label>
+									<div class="cbi-value-field">
+										<input id="edit__radio_2g__beacon" type="text" verify="beacon2g"/>&nbsp;ms
+										<span class="icon-tip" title="输入数字50~1000."></span>
+									</div>
+								</div>
+								<div class="cbi-value clearfix">
+									<label class="cbi-value-title" for="edit__radio_2g__dtim">DTIM间隔</label>
+									<div class="cbi-value-field">
+										<input id="edit__radio_2g__dtim" type="text" verify="dtim2g"/>&nbsp;ms
+										<span class="icon-tip" title="输入数字1~100."></span>
+									</div>
+								</div>
+								<div class="cbi-value clearfix">
+									<label class="cbi-value-title">前导码类型</label>
+									<div class="cbi-value-field" style="line-height: 30px;">
+										<label style="margin-right:10px;"><input id="edit__radio_2g__leadcode" name="edit__radio_2g__leadcode" value="0" type="radio"/>长前导码</label>
+										<label><input checked="checked" name="edit__radio_2g__leadcode" value="1" type="radio"/>短前导码</label>
+									</div>
+								</div>
+								<div class="cbi-value clearfix">
+									<label class="cbi-value-title" for="edit__radio_2g__shortgi">Short GI</label>
+									<div class="cbi-value-field" style="line-height: 30px;">
+										<label><input id="edit__radio_2g__shortgi" value="1" type="checkbox"/>启用</label>
+									</div>
+								</div>
+								<div class="cbi-value clearfix">
+									<label class="cbi-value-title" for="edit__radio_2g__remax">最大重传</label>
+									<div class="cbi-value-field">
+										<input id="edit__radio_2g__remax" type="text" verify="remax2g"/>&nbsp;次
+										<span class="icon-tip" title="输入数字1~10."></span>
+									</div>
+								</div>
+								<div class="cbi-value clearfix">
+									<label class="cbi-value-title" for="edit__radio_2g__ampdu">A-MPDU</label>
+									<div class="cbi-value-field" style="line-height: 30px;">
+										<label><input id="edit__radio_2g__ampdu" value="1" type="checkbox"/>启用</label>
+									</div>
+								</div>
+								<div class="cbi-value clearfix">
+									<label class="cbi-value-title" for="edit__radio_2g__amsdu">A-MSDU</label>
+									<div class="cbi-value-field" style="line-height: 30px;">
+										<label><input id="edit__radio_2g__amsdu" value="1" type="checkbox"/>启用</label>
+									</div>
+								</div>
+							</fieldset>
+						</div>
+						<div id="tabs_RadioConf_b">
+							<fieldset class="field-d">
+								<legend class="field-d">基本配置</legend>
+								<div class="cbi-value clearfix">
+									<label class="cbi-value-title" for="edit__radio_5g__switch">启用</label>
+									<div class="cbi-value-field" style="line-height:30px;">
+										<input type="checkbox" id="edit__radio_5g__switch" value="1" />
+									</div>
+								</div>
+								<div class="cbi-value clearfix">
+									<label class="cbi-value-title" for="edit__radio_5g__wireless_protocol">无线协议</label>
+									<div class="cbi-value-field">
+										<select id="edit__radio_5g__wireless_protocol">
+											<option value="a">a</option>
+											<option value="n">n</option>
+											<option selected="selected" value="an">an</option>
+										</select>
+									</div>
+								</div>
+								<div class="cbi-value clearfix">
+									<label class="cbi-value-title" for="edit__radio_5g__bandwidth">信道带宽</label>
+									<div class="cbi-value-field">
+										<select id="edit__radio_5g__bandwidth">
+											<option selected="selected" value="auto">auto</option>
+											<option value="20">20</option>
+											<option value="40+">40+</option>
+											<option value="40-">40-</option>
+										</select>
+									</div>
+								</div>
+								<div class="cbi-value clearfix channel_5g_big" style="line-height:30px;">
+									<label class="cbi-value-title">工作信道批量调整</label>
+									<div class="cbi-value-field">
+										<input type="checkbox" class="channel_5g_enable" />
+										<span class="icon-tip" title="批量操作时，勾选后才对工作信道下发配置生效."></span>
+									</div>
+								</div>
+								<div class="cbi-value clearfix">
+									<label class="cbi-value-title" for="edit__radio_5g__channel_id">工作信道</label>
+									<div class="cbi-value-field">
+										<select id="edit__radio_5g__channel_id">
+											<option value="auto">auto</option>
+										</select>
+									</div>
+								</div>
+								<div class="cbi-value clearfix">
+									<label class="cbi-value-title" for="edit__radio_5g__power">功率</label>
+									<div class="cbi-value-field">
+										<select id="edit__radio_5g__power">
+											<option selected="selected" value="auto">auto</option>
+											<option value="3">3</option>
+											<option value="4">4</option>
+											<option value="5">5</option>
+											<option value="6">6</option>
+											<option value="7">7</option>
+											<option value="8">8</option>
+											<option value="9">9</option>
+											<option value="10">10</option>
+											<option value="11">11</option>
+											<option value="12">12</option>
+											<option value="13">13</option>
+											<option value="14">14</option>
+											<option value="15">15</option>
+											<option value="16">16</option>
+											<option value="17">17</option>
+											<option value="18">18</option>
+											<option value="19">19</option>
+											<option value="20">20</option>
+											<option value="21">21</option>
+											<option value="22">22</option>
+											<option value="23">23</option>
+										</select>&nbsp;dBm
+									</div>
+								</div>
+								<div class="cbi-value clearfix">
+									<label class="cbi-value-title" for="edit__radio_5g__users_limit">最大用户数</label>
+									<div class="cbi-value-field">
+										<input id="edit__radio_5g__users_limit" type="text" value="30" verify="num5g"/>
+										<span class="icon-tip" title="输入数字5~50."></span>
+									</div>
+								</div>
+							</fieldset>
+							
+							<fieldset class="field-d">
+								<legend>高级配置</legend>
+								<div class="cbi-value clearfix">
+									<label class="cbi-value-title" for="edit__radio_5g__rts">RTS阈值</label>
+									<div class="cbi-value-field">
+										<input id="edit__radio_5g__rts" type="text" verify="rts5g"/>&nbsp;Byte
+										<span class="icon-tip" title="输入数字1~2347."></span>
+									</div>
+								</div>
+								<div class="cbi-value clearfix">
+									<label class="cbi-value-title" for="edit__radio_5g__beacon">Beacon周期</label>
+									<div class="cbi-value-field">
+										<input id="edit__radio_5g__beacon" type="text" verify="beacon5g"/>&nbsp;ms
+										<span class="icon-tip" title="输入数字50~1000."></span>
+									</div>
+								</div>
+								<div class="cbi-value clearfix">
+									<label class="cbi-value-title" for="edit__radio_5g__dtim">DTIM间隔</label>
+									<div class="cbi-value-field">
+										<input id="edit__radio_5g__dtim" type="text" verify="dtim5g"/>&nbsp;ms
+										<span class="icon-tip" title="输入数字1~100."></span>
+									</div>
+								</div>
+								<div class="cbi-value clearfix">
+									<label class="cbi-value-title">前导码类型</label>
+									<div class="cbi-value-field" style="line-height: 30px;">
+										<label style="margin-right:10px;"><input id="edit__radio_5g__leadcode" name="edit__radio_5g__leadcode" value="0" type="radio"/>长前导码</label>
+										<label><input name="edit__radio_5g__leadcode" value="1" type="radio" checked="checked"/>短前导码</label>
+									</div>
+								</div>
+								<div class="cbi-value clearfix">
+									<label class="cbi-value-title" for="edit__radio_5g__shortgi">Short GI</label>
+									<div class="cbi-value-field" style="line-height: 30px;">
+										<label><input id="edit__radio_5g__shortgi" value="1" type="checkbox"/>启用</label>
+									</div>
+								</div>
+								<div class="cbi-value clearfix">
+									<label class="cbi-value-title" for="edit__radio_5g__remax">最大重传</label>
+									<div class="cbi-value-field">
+										<input id="edit__radio_5g__remax" type="text" verify="remax5g"/>&nbsp;次
+										<span class="icon-tip" title="输入数字1~10."></span>
+									</div>
+								</div>
+								<div class="cbi-value clearfix">
+									<label class="cbi-value-title" for="edit__radio_5g__ampdu">A-MPDU</label>
+									<div class="cbi-value-field" style="line-height: 30px;">
+										<label><input id="edit__radio_5g__ampdu" value="1" type="checkbox"/>启用</label>
+									</div>
+								</div>
+								<div class="cbi-value clearfix">
+									<label class="cbi-value-title" for="edit__radio_5g__amsdu">A-MSDU</label>
+									<div class="cbi-value-field" style="line-height: 30px;">
+										<label><input id="edit__radio_5g__amsdu" value="1" type="checkbox"/>启用</label>
+									</div>
+								</div>
+							</fieldset>
+						</div>
+					</div>
+				</div>
+				
+				<div id="tabs_APConf_c">
+					<fieldset class="field-d">
+						<legend>AP运行日志</legend>
+						<div style="margin:0 20px;">
+							<textarea id="LogRuntime" style="width:100%; margin:0px 0 3px 2px; min-height:240px; resize;"></textarea>
+						</div>
+						<div class="cbi-value clearfix" style="padding-left:20px;padding-top:10px;">
+							<input id="btn_exec_cmd" class="cbi-button" type="button" value="获取日志" />
+						</div>
+					</fieldset>
+				</div>
+			</div>
+		</fieldset>
+	</form>
+</div>
+
+<!-- 邻居 -->
+<div id="dialog_naps" style="display:none;">
+	<fieldset>
+		<table id="naps_list">
+			<thead>
+				<tr>
+					<td>BSSID</td>
+					<td>频段</td>
+					<td>当前信道</td>
+					<td>信号强度</td>
+				</tr>
+			</thead>
+		</table>
+	</fieldset>
+</div>
+
+<!-- 删除 -->
+<div id="delAP" style="display:none;">
+	<fieldset>
+		<p>删除AP将清除所有在线AP的配置和清除不在线的AP节点.</br>确定要删除此AP？</p> 
+	</fieldset>
+</div>
+
+<!-- 恢复出厂 -->
+<div id="resetAP" style="display:none;">
+	<fieldset>
+		<p>将AP恢复到出厂状态, 需要环境有DHCP服务,并和AC同网段才能重新上线.</br>确定要复位这些AP？</p> 
+	</fieldset>
+</div>
+
+<!-- 隐藏datatab列 -->
+<div id="hide_column" style="display:none;">
+	<fieldset>
+		<div style="padding:0 0 0 30%;">
+			<ul class="ul_cols">
+				<li>
+					<label><input type="checkbox" checked="checked" disabled="disabled" value="0" />序号</label>
+				</li>
+				<li>
+					<label><input type="checkbox" value="1" />AP</label>
+				</li>
+				<li>
+					<label><input type="checkbox" value="2" />描述</label>
+				</li>
+				<li>
+					<label><input type="checkbox" value="3" />IP地址</label>
+				</li>
+				<li>
+					<label><input type="checkbox" value="4" />当前用户数</label>
+				</li>
+				<li>
+					<label><input type="checkbox" value="5" />Radio</label>
+				</li>
+				<li>
+					<label><input type="checkbox" value="6" />邻居AP列表</label>
+				</li>
+				<li>
+					<label><input type="checkbox" value="7" />运行时间</label>
+				</li>
+				<li>
+					<label><input type="checkbox" value="8" />上线时间</label>
+				</li>
+				<li>
+					<label><input type="checkbox" value="9" />固件版本</label>
+				</li>
+				<li>
+					<label><input type="checkbox" value="10" />状态</label>
+				</li>
+				<li>
+					<label><input type="checkbox" checked="checked" disabled="disabled" value="11" />全选/反选</label>
+				</li>
+			</ul>
+		</div>
+	</fieldset>
+</div>
+
+<%+footer%>
