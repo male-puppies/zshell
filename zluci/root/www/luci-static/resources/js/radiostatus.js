@@ -64,7 +64,7 @@ function createDtRadios() {
 				"mRender": function(d, t, f) {
 					var data = d;
 					if (data == "default" || data == "") data = f.ap;
-					return '<a class="underline fontwidth_family" href="apstatus?filter='+ f.ap +'">' + data + '</a><span style="display:none;">' + f.ap + '</span>';
+					return '<a class="underline" href="apstatus?filter='+ f.ap +'">' + data + '</a><span style="display:none;">' + f.ap + '</span>';
 				}
 			},
 			{
@@ -91,7 +91,7 @@ function createDtRadios() {
 function createDtNeighbor() {
 	return $('#neighbor_list').dataTable({
 		"bAutoWidth": false,
-		"aaSorting": [[3, 'asc']],
+		"aaSorting": [[3, 'desc']],
 		"sPaginationType": "full_numbers",
 		"language": {"url": '/luci-static/resources/js/black/dataTables.chinese.json'},
 		"aoColumns": [
@@ -99,10 +99,7 @@ function createDtNeighbor() {
 				"mData": "ssid"
 			},
 			{
-				"mData": "bssid",
-				"mRender": function(d, t, f) {
-					return '<div class="fontwidth_family">'+ d +'</div>';
-				}
+				"mData": "bssid"
 			},
 			{
 				"mData": "channel_id"
@@ -111,20 +108,21 @@ function createDtNeighbor() {
 				"mData": "rssi",
 				"sWidth": 180,
 				"mRender": function(d, t, f){
-					return '<span style="display:none;">'+ d + '</span>' + '<div class="rssi_blocks" value="'+ RssiConvert(d) +'" text="'+ toSameNum(d, 4) +' dBm"></div>';
+					return '<span style="display:none;">'+ toSameNum(d, 4) + '</span>' + '<div class="rssi_blocks" value="'+ d +'"><div class="rssi_tip"></div></div>';
 				}
 			}
 		],
 		"fnDrawCallback": function() {
-			$('.rssi_blocks').each(function() {
-				var rssi = $(this).attr('value');
-				var text = $(this).attr('text');
-				$(this).progressbar({
-					"value": rssi,
-					"text": text
+			$('.rssi_blocks').each(function(index, element) {
+				var val = $(element).attr('value');
+				var rssi = RssiConvert(val);
+				$(element).progressbar({
+					"value": rssi
 				});
-				$(this).find('.progressbar-value').css('background-color', RssiColor(rssi));
+				$(element).find(".rssi_tip").text(val +' dBm');
+				$(element).find('.ui-progressbar-value').css('background-color', RssiColor(rssi));
 			});
+			
 		}
 	});
 }
@@ -143,7 +141,14 @@ function createDtWlanstate() {
 				"mData": "essid"
 			},
 			{
-				"mData": "bssid"
+				"mData": "bssid",
+				"mRender": function(d, t, f) {
+					if ("bssid" in f) {
+						return d;
+					} else {
+						return "";
+					}
+				}
 			},
 			{
 				"mData": "rate",
@@ -154,9 +159,9 @@ function createDtWlanstate() {
 			{
 				"mData": "users",
 				"mRender": function(d, t, f){
-					return '<a style="padding:0 5px;" class="underline" href="'+ urlFilterString +'onlineuser?filter=' + wlanStateID.apid + '||' + f.essid + '||' + wlanStateID.band +'">' + toSameNum(d, 3) + '</a>';
+					return '<a style="padding:0 5px;color:#C00;text-decoration:underline;" href="onlineuser?filter=' + wlanStateID.apid + '||' + f.essid + '||' + wlanStateID.band +'">' + toSameNum(d, 3) + '</a>';
 				}
-			},
+			}
 		]
 	});
 }
@@ -254,6 +259,26 @@ function initData() {
 	});
 }
 
+function getRequestFilter() {
+	var str,
+		restr = "",
+		obj = {},
+		url = window.location.search;
+		
+	if (url && url != "") {
+		url = url.substring(1);
+		str = url.split("&");
+		
+		for (var i = 0; i < str.length; i ++) {
+			obj[str[i].split("=")[0]] = str[i].split("=")[1];
+		}
+		
+		if ("filter" in obj) {
+			restr = obj.filter.split("||").join(" ");
+		}
+	}
+	return decodeURI(restr);
+}
 
 function saveHideColumn() {
 	var obj = {};
@@ -276,9 +301,11 @@ function saveHideColumn() {
 }
 
 function openNeighbor(g, ap) {
-	var obj = {};
-	obj.band = g;
-	obj.apid = ap;
+	var obj = {
+		"band": g,
+		"apid": ap
+	}
+
 	cgicall('NWLAN', obj, function(d) {
 		if (d.status == 0) {
 			dtReloadData(oTabNeighbor, dtObjToArray(d.data));
@@ -295,6 +322,7 @@ function openWlanstate(g, ap) {
 	wlanStateID.apid = ap;
 	cgicall('WLANState', wlanStateID, function(d) {
 		if (d.status == 0) {
+			console.log(dtObjToArray(d.data))
 			dtReloadData(oTabWlanstate, dtObjToArray(d.data));
 		} else {
 			console.log("open wlanstate fail" + (d.data ? d.data : ""));
@@ -321,15 +349,23 @@ function OnHideCol() {
 	$("#hide_column").dialog('open');
 }
 
-function toSameNum(d, n) {
-	var num,
-		str = d.toString(),
-		len = str.length;
-	if (len < n) {
-		num = parseInt(n) - len;
-		for (var i = 0; i < num; i++) {
-			str = ' ' + str;
-		}
-	}
-	return str;
+function RssiConvert(d) {
+	var num = parseInt(d);
+	var per = Math.round((100*num + 11000)/75); //-30信号强度为100%,-110为0%
+	if (per < 0) per = 0;
+	if (per > 100) per = 100;
+	return per;
+}
+
+function RssiColor(sRate) {
+	var r = 0,
+		g = 0,
+		b = 0,
+		rate = parseInt(sRate);
+
+	b = (100 - rate) * 155 / 100 + 100;
+	r = (100 - rate) * 155 / 100 + 100;
+	g = rate * 100 / 100 + 200;
+
+	return 'rgb(' + parseInt(r) + ', ' + parseInt(g) + ', ' + parseInt(b) + ')';
 }

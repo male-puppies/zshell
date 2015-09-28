@@ -414,16 +414,3 @@ function OnSelectAll2() {
 	var that = this;
 	dtSelectAll(that, oTabAps);
 }
-
-function toSameNum(d, n) {
-	var num,
-		str = d.toString(),
-		len = str.length;
-	if (len < n) {
-		num = parseInt(n) - len;
-		for (var i = 0; i < num; i++) {
-			str = ' ' + str;
-		}
-	}
-	return str;
-}

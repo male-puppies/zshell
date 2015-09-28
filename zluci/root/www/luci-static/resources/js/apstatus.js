@@ -1022,18 +1022,3 @@ function country_5gSet(obj) {
 	$("#edit__radio_5g__channel_id").html(str_5g);
 }
 
-function toSameNum(d, n) {
-	var num,
-		str = d.toString(),
-		len = str.length;
-	if (len < n) {
-		num = parseInt(n) - len;
-		for (var i = 0; i < num; i++) {
-			str = ' ' + str;
-		}
-	}
-	return str;
-}
-
-
-

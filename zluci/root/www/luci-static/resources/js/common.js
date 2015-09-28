@@ -330,6 +330,20 @@
 		}
     };
 	
+	
+	function toSameNum(d, n) {
+		var num,
+			str = d.toString(),
+			len = str.length;
+		if (len < n) {
+			num = parseInt(n) - len;
+			for (var i = 0; i < num; i++) {
+				str = ' ' + str;
+			}
+		}
+		return str;
+	}
+	
 	/* cgi */
 	root.cgicall =					cgicall;				//post
 	root.jsonTraversal =			jsonTraversal;			//取值赋值入口
@@ -347,4 +361,6 @@
 	root.dtGetSelected =			dtGetSelected;			//获取datatable选中的列
 	root.dtSelectAll =				dtSelectAll;			//选中所有datatable列
 	root.dtBindRowSelectEvents = 	dtBindRowSelectEvents;	//绑定选择事件
+	
+	root.toSameNum = toSameNum;								//设置字符串长度n，用空格代替不足
 })(this);
