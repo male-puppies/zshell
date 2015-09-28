@@ -1,25 +1,11 @@
-// var diagRestart,
-	// diagUpgrade,
-	// diagEditAP,
-	// diagDel,
-	// diagNaps,
-	// diagRst,
-	// diagHideColumn,
-	// hideColumns = ["7","9"],
-	// oTabAPs,
-	// oTabNaps,
-	// oTabScan,
-	// oTabNeighbor,
-	// oAPNodes,
-	// oAP,
-	// ApLogMac,
-	// oldObj,
-	// isFirstFilterURL = true, //只执行一次URL过滤
-	// clearInitData,
-	// aAPNodesEdit = [],
-	// aSSIDs = [];
 var oTabAPs,
-	oTabNaps;
+	oTabNaps,
+	oAP,
+	ApLogMac,
+	nodeEdit,
+	clearInitData,
+	isFirstFilterURL = true,
+	hideColumns = ["7","9"];
 	
 var edit_radio_2g = {
 		'ampdu': '1',
@@ -53,129 +39,104 @@ var edit_radio_2g = {
 		'users_limit': '30',
 		'wireless_protocol': 'an'
 	};
-
-//页面加载初始化
+	
 $(document).ready(function() {
-	initCreateDialog();
-	$("#tabs_APConf").tabs();
-	$("#tabs_RadioConf").tabs();
 	oTabAPs = createDtAPs();
 	oTabNaps = createDtNaps();
-	$( "#editAP" ).tooltip();
-	
-	// diagHideColumn = createDialogHideColumn();
-	// diagRestart = createDialogRestart();
-	// diagUpgrade = createDialogUpgradeAP(); //
-	// diagEditAP = createDialogEdit();
-	// diagDel = createDialogDel();
-	// diagRst = createDialogRst(); //恢复出厂配置
-	// diagNaps = createDialogNpas();
-	// oTabAPs = createDtAPs();
-	// oTabNaps = createDtNaps();
-	// $("#AP_list_length").append('<input class="btn btn_col" style="margin-left:20px;" type="button" value="数据显示" />');
-	// initData();
-	// BuildFwList();
-	// initEvent();
+	initCreateDialog();
+	initData();
+	initEvent();
 });
 
-function setTimeInitData() {
-	clearTimeout(clearInitData);
-	clearInitData = setTimeout(function(){
-		initData();
-		BuildFwList();
-   	}, 10000);
-}
-
-
 function createDtAPs() {
-	return $('#AP_list').DataTable({
-		// "iDisplayLength": 10,
-		// "bProcessing": false,
-		// "bSort": true, //排序
-		// "sServerMethod": "POST", //默认get
-		// "sAjaxDataProp": "", //数据源 如：data.arr
-		//"aoColumnDefs": [ { "bSortable": false, "aTargets": [ 6,7 ] }],
+	return $('#AP_list').dataTable({
 		"bAutoWidth": false,
-		"sPaginationType": "full_numbers", //显示分页数字
-		"language": {
-			"url": '/luci-static/resources/js/black/dataTables.chinese.json'
-		},
 		"aaSorting": [[1, 'asc']],
+		"sPaginationType": "full_numbers",
+		"language": {"url": '/luci-static/resources/js/black/dataTables.chinese.json'},
 		"aoColumns": [
 			{
-				"mData": "id",
+				"mData": null,
+				"sWidth": 80
+			},
+			{
+				"mData": "mac",
 				"mRender": function(d, t, f) {
-					return 'test';
+					return "<a href='javascript:;' class='edit' title='编辑' onclick='editAps(\"" + d + "\")'>"+ d +"</a>";
 				}
 			},
 			{
-				"mData": "id",
+				"mData": "ap_describe"
+			},
+			{
+				"mData": "ip_address"
+			},
+			{
+				"mData": "current_users",
 				"mRender": function(d, t, f) {
-					return 'test';
+					return '<a style="padding:0 5px;" class="underline" href="onlineuser?filter='+ f.mac +'">' + toSameNum(d, 3) + '</a>';
 				}
 			},
 			{
-				"mData": "id",
+				"mData": "radio",
 				"mRender": function(d, t, f) {
-					return 'test';
+					return '<a class="underline" href="radiostatus?filter='+ f.mac +'">' + d.toUpperCase() + '</a>';
 				}
 			},
 			{
-				"mData": "id",
+				"mData": "naps",
 				"mRender": function(d, t, f) {
-					return 'test';
+					return '<a style="padding:0 5px;" href="javascript:;" onclick="openNaps(\'' + f.mac + '\')">' + toSameNum(ObjCountLength(d), 3) + '</a>';
 				}
 			},
 			{
-				"mData": "id",
+				"mData": "boot_time"
+			},
+			{
+				"mData": "online_time"
+			},
+			{
+				"mData": "firmware_ver",
 				"mRender": function(d, t, f) {
-					return 'test';
+					var str = d;
+					var aVer = d.split('.');
+					if (aVer && aVer.length > 4) {
+						str = aVer[0] + '.' + aVer[4];
+					};
+					return str;
 				}
 			},
 			{
-				"mData": "id",
-				"mRender": function(d, t, f) {
-					return 'test';
+				"mData": "state",
+				"mRender": function(d, t, f) { //状态,online,offline
+					var str = '<span style="color:';
+					if (d.status == '1') {
+						str += 'green;">在线';
+					} else if (d.status == '2'){
+						str += 'blue;">升级中';
+					} else {
+						str += 'black;">离线';
+					}
+					str += "</span>"
+					return str;
 				}
 			},
 			{
-				"mData": "id",
-				"mRender": function(d, t, f) {
-					return 'test';
-				}
-			},
-			{
-				"mData": "id",
-				"mRender": function(d, t, f) {
-					return 'test';
-				}
-			},
-			{
-				"mData": "id",
-				"mRender": function(d, t, f) {
-					return 'test';
-				}
-			},
-			{
-				"mData": "id",
-				"mRender": function(d, t, f) {
-					return 'test';
-				}
-			},
-			{
-				"mData": "id",
-				"mRender": function(d, t, f) {
-					return 'test';
-				}
-			},
-			{
-				"mData": "id",
+				"mData": null,
+				"choose": false,
 				"bSortable": false,
-				"mRender": function(d, t, f) {
-					return 'test';
+				"sWidth": 80,
+				"mRender": function() {
+					return '<input type="checkbox" value="1 0" />';
 				}
 			}
-		]
+		],
+		"fnRowCallback": dtBindRowSelectEvents,
+		"fnDrawCallback": function() {
+			this.api().column(0).nodes().each(function(cell, i) {
+				cell.innerHTML = i + 1;
+			});
+		}
 	});
 }
 
@@ -187,7 +148,8 @@ function createDtNaps() {
 			"url": '/luci-static/resources/js/black/dataTables.chinese.json'
 		},
 		"aaSorting": [[3, 'asc']],
-		"aoColumns": [{
+		"aoColumns": [
+			{
 				"mData": "apid",
 				"mRender": function(d, t, f) {
 					if (f.desc && f.desc != '') {
@@ -278,7 +240,7 @@ function createDtNaps() {
 function initCreateDialog() {
 	$('#restartAP').dialog({
 		"title": '重启AP',
-		"autoOpen": true,
+		"autoOpen": false,
 		"modal": true,
 		"resizable": true,
 		"width": 480,
@@ -287,7 +249,7 @@ function initCreateDialog() {
 			{
 				"text": "确定",
 				"click": function() {
-					// DoAPsRestart();
+					DoAPsRestart();
 					$(this).dialog( "close" );
 				}
 			},
@@ -310,7 +272,7 @@ function initCreateDialog() {
 			{
 				"text": '开始升级',
 				"click": function() {
-					// DoUpdateFireware();
+					DoUpdateFireware();
 					$(this).dialog('close');
 				}
 			},
@@ -325,7 +287,7 @@ function initCreateDialog() {
 	
 	$('#editAP').dialog({
 		"title": '配置AP参数',
-		"autoOpen": true,
+		"autoOpen": false,
 		"modal": true,
 		"width": 560,
 		"height": 480,
@@ -336,7 +298,7 @@ function initCreateDialog() {
 					// if (!verification()) {
 						// return;
 					// }
-					// saveConfAp();
+					saveConfAp();
 					$(this).dialog("close")
 				}
 			},
@@ -359,7 +321,7 @@ function initCreateDialog() {
 			{
 				"text": '确认',
 				"click": function() {
-					// DoDeleteAPs();
+					DoDeleteAPs();
 					$(this).dialog('close');
 				}
 			},
@@ -382,7 +344,7 @@ function initCreateDialog() {
 			{
 				"text": '确认',
 				"click": function() {
-					// DoAPsReset();
+					DoAPsReset();
 					$(this).dialog('close');
 				}
 			}, {
@@ -396,7 +358,7 @@ function initCreateDialog() {
 	
 	$('#dialog_naps').dialog({
 		"title": '邻居AP列表',
-		"autoOpen": true,
+		"autoOpen": false,
 		"modal": true,
 		"width": 560,
 		"height": 480,
@@ -414,13 +376,13 @@ function initCreateDialog() {
 		"title": '显示隐藏列',
 		"autoOpen": false,
 		"modal": true,
-		"width": 400,
-		"height": 320,
+		"width": 480,
+		"height": 360,
 		"buttons": [
 			{
 				"text": '保存',
 				"click": function() {
-					// saveHideColumn();
+					saveHideColumn();
 					$(this).dialog('close');
 				}
 			},
@@ -434,135 +396,150 @@ function initCreateDialog() {
 	});
 }
 
+function setTimeInitData() {
+	clearTimeout(clearInitData);
+	clearInitData = setTimeout(function(){
+		initData();
+   	}, 10000);
+}
 
+function initData() {
+	cgicall("ApmListAPs", function(d) {
+		cgicall("GetHideColumns", "webui/hidepage/wireless/apstatus", function(hd) {
+			if (d.status == 0) {
+				var data = d.data,
+					node = oTabAPs.fnGetNodes(),
+					harr = hideColumns,
+					macNode = {}; //记录选中的mac，mac是唯一标识
 
-function initData(cb) {
-	cgicall('RDS.ApmListAPs()', function(d) {
-		cgicall('RDS.GetHideColumns("webui/hidepage/wireless/apstatus")', function(dd) {
-			oldObj = cloneObj(d);
-			oAP = d;
-			/*
-			if (oAP.EnableFireware == "2" || oAP.EnableFireware == "3") {
-				$('.upgrade').css('display', '');
-			} else {
-				$('.upgrade').css('display', 'none');
-			}
-			*/
-			oAPNodes = d.APs;
-			if (!dd || dd == "false") {
-				dd = hideColumns;
-			} else {
-				hideColumns = dd;
-			}
-			//获取checkbox选项
-			var gNodeB = oTabAPs.fnGetNodes();
-			var macNodeB = {}; //记录选中的mac，mac是唯一标识
-			for (var k in gNodeB) {
-				if ($(gNodeB[k]).hasClass('row_selected')) {
-					var macKeyB = $(gNodeB[k]).find('td:eq(1) a.opera_style').html();
-					macNodeB[macKeyB] = '1';
-                };
-			}
-			//过滤刷新
-			dtReloadData(oTabAPs, ObjectToArray(d.APs), true, function() {
-				if ($('.dataTables_filter input').val() != '') {
-					oTabAPs.fnFilter($('.dataTables_filter input').val());
-				} else {
-					if (isFirstFilterURL) {
-						oTabAPs.fnFilter(GetRequestFilter());
+				oAP = d.data;
+				if (hd.status == 0) {
+					if (Object.prototype.toString.call(hd.data) === '[object Array]') {
+						hideColumns = hd.data;
+						harr = hd.data;
+					}
+				}
+
+				for (var i = 0; i < node.length; i++) {
+					if ($(node[i]).hasClass('row_selected')) {
+						var key = $(node[i]).find('td:eq(1) a.edit').html();
+						macNode[key] = '1';
+					};
+				}
+				
+				dtReloadData(oTabAPs, dtObjToArray(data.APs), true, function() {
+					var macKey,
+						furl = getRequestFilter(),
+						mnode = oTabAPs.fnGetNodes();
+
+					if (furl != "" && isFirstFilterURL) {
+						oTabAPs.fnFilter(furl);
 						isFirstFilterURL = false;
 					}
-				}
-				//勾选重绘之前选中的checkbox
-				var gNodeA = oTabAPs.fnGetNodes();
-				for (var n in gNodeA) {
-					var macKeyA = $(gNodeA[n]).find('td:eq(1) a.opera_style').html();
-					if (macNodeB[macKeyA]) {
-						$(gNodeA[n]).addClass('row_selected').find('td input[type="checkbox"]').attr('checked', true);
+
+					//勾选重绘之前选中的checkbox
+					for (var n in mnode) {
+						macKey = $(mnode[n]).find('td:eq(1) a.edit').html();
+						if (macKey in macNode) {
+							$(mnode[n]).addClass('row_selected').find('td input[type="checkbox"]').prop('checked', true);
+						}
 					}
-				}
-			});
+					dtHideColumn(oTabAPs, harr);
+				});
+				
+				setTimeInitData();	
+			} else {
+				console.log("ApmListAPs error " + (d.data ? d.data : ""));
+			}
 			
-			$('#AP_list').oDtHideColumn(oTabAPs, dd);
-			if (cb) {
-				cb();
-			};
-			setTimeInitData();
 		});
 	});
-	
-	// cgicall('RDS.GetBandSupport("")', function(d) {
-		// if (d == "2g") {
-			// $('#radio_tabs').find('ul.tabs li:eq(0)').addClass('tabs-selected').css('display', 'block');
-			// $('#radio_tabs').find('ul.tabs li:eq(1)').removeClass('tabs-selected').css('display', 'none');
-			// $('.radio_tabs_2g').parent('.panel').css('display', 'block').find('input,textarea,select').not('#edit__radio_2g__channel_id').attr('disabled', false);
-			// $('.radio_tabs_5g').parent('.panel').css('display', 'none').find('input,textarea,select').not('#edit__radio_5g__channel_id').attr('disabled', true);
-		// } else if (d == "5g") {
-			// $('#radio_tabs').find('ul.tabs li:eq(1)').addClass('tabs-selected').css('display', 'block');
-			// $('#radio_tabs').find('ul.tabs li:eq(0)').removeClass('tabs-selected').css('display', 'none');
-			// $('.radio_tabs_5g').parent('.panel').css('display', 'block').find('input,textarea,select').not('#edit__radio_5g__channel_id').attr('disabled', false);
-			// $('.radio_tabs_2g').parent('.panel').css('display', 'none').find('input,textarea,select').not('#edit__radio_2g__channel_id').attr('disabled', true);
-		// } else {
-			// $('#radio_tabs').find('ul.tabs li').css('display', 'block');
-			// $('.radio_tabs_2g,.radio_tabs_5g').find('input,textarea,select').not('#edit__radio_2g__channel_id,#edit__radio_5g__channel_id').attr('disabled', false);
-		// }
-	// });
+
+	cgicall("ApmFirewareList", function(d) {
+		if (d.status == 0) {
+			var strHtml = '';
+			for (var i = 0; i < d.length; i++) {
+				if (d[i].length == 0) continue;
+				strHtml += "</li>" + d[i] + "</li>";
+			}
+			$('#ul_VerAcFirw').html(strHtml);
+		} else {
+			console.log("ApmFirewareList error " + (d.data ? d.data : ""));
+		}
+	});
+}
+
+function getRequestFilter() {
+	var str,
+		restr = "",
+		obj = {},
+		url = window.location.search;
+		
+	if (url && url != "") {
+		url = url.substring(1);
+		str = url.split("&");
+		
+		for (var i = 0; i < str.length; i ++) {
+			obj[str[i].split("=")[0]] = str[i].split("=")[1];
+		}
+		
+		if ("filter" in obj) {
+			restr = obj.filter.split("||").join(" ");
+		}
+	}
+	return decodeURI(restr);
 }
 
 function saveHideColumn() {
-	var str = {};
+	var obj = {};
 	var hidenum = [];
 	$('#hide_column ul.ul_cols li').each(function(index, element) {
-		if ($(element).find('input').attr("checked") != "checked") {
+		if (!$(element).find('input').is(":checked")) {
 			hidenum.push($(element).find('input').val());
 		}
 	});
-	str.page = 'webui/hidepage/wireless/apstatus';
-	str.data = hidenum;
-	cgicall('RDS.DtHideColumns(%j)', str, function(d) {
-		hideColumns = hidenum;
-		$('#AP_list').oDtHideColumn(oTabAPs, hidenum);
+	obj.page = 'webui/hidepage/wireless/apstatus';
+	obj.data = hidenum;
+	cgicall('DtHideColumns', obj, function(d) {
+		console.log(hidenum)
+		if (d.status == 0) {
+			hideColumns = hidenum;
+			dtHideColumn(oTabAPs, hidenum);
+		} else {
+			alert("操作失败！" + (d.data ? d.data : ""));
+		}
 	});
-	diagHideColumn.dialog('close');
 }
 
-function openNaps(mac) {
-	dtReloadData(oTabNaps, oAP.APs[mac].naps, false);
-	diagNaps.dialog('open');
-}
-
-function GetSelectedAps(id, keep) {
-	if (!keep)
-		aAPNodesEdit = [];
-
-	if (id) {
-		if (oAPNodes[id]) {
-			var ap = oAPNodes[id];
-			aAPNodesEdit.push(ap);
+function GetSelectedAps(mac) {
+	nodeEdit = [];
+	if (mac) {
+		if (oAP.APs[mac]) {
+			nodeEdit.push(oAP.APs[mac]);
 		}
 	} else {
-		aAPNodesEdit = dtGetSelected(oTabAPs);
+		nodeEdit = dtGetSelected(oTabAPs);
 	}
 }
 
-function set_edit(id) {
-	if (id) {
-		ApLogMac = id;
+function editAps(mac) {
+	if (mac) {
+		ApLogMac = mac;
 	} else {
 		ApLogMac = "";
 	}
-	GetSelectedAps(id)
-	if (aAPNodesEdit.length < 1) {
+	GetSelectedAps(mac);
+	if (nodeEdit.length < 1) {
 		alert('选择要编辑的AP！');
 		return;
-	} else if (aAPNodesEdit.length > 1) {
-		setConfigDefault(aAPNodesEdit[0]); //批量修改 radio配置改成默认值
+	} else if (nodeEdit.length > 1) {
+		setConfigDefault(nodeEdit[0]); //批量修改 radio配置改成默认值
 	}
 
-	set_country_channel(aAPNodesEdit[0]);
-	jsonTraversal(aAPNodesEdit[0], jsTravSet);
+	set_country_channel(nodeEdit[0]);
+	jsonTraversal(nodeEdit[0], jsTravSet);
 	OnLanDHCPChg();
-	onWorkMode(aAPNodesEdit[0].edit.work_mode);
+	OnWorkMode(nodeEdit[0].edit.work_mode);
 	$('.invalid').removeClass('invalid');
 	
 	var Ulimit2g = $('#edit__radio_2g__users_limit');
@@ -578,17 +555,165 @@ function set_edit(id) {
 		}
 	}
 	
-	if (aAPNodesEdit.length > 1) {
+	if (nodeEdit.length > 1) {
 		$('.channel_2g_big,.channel_5g_big').css('display', 'block');
-		$('.channel_2g_enable,.channel_5g_enable').attr('checked', false).attr('disabled', false);
-		$('#edit__radio_2g__channel_id,#edit__radio_5g__channel_id').attr('disabled', true);
+		$('.channel_2g_enable,.channel_5g_enable').prop('checked', false).prop('disabled', false);
+		$('#edit__radio_2g__channel_id,#edit__radio_5g__channel_id').prop('disabled', true);
 	} else {
 		$('.channel_2g_big,.channel_5g_big').css('display', 'none');
-		$('.channel_2g_enable,.channel_5g_enable').attr('checked', true).attr('disabled', true);
-		$('#edit__radio_2g__channel_id,#edit__radio_5g__channel_id').attr('disabled', false);
+		$('.channel_2g_enable,.channel_5g_enable').prop('checked', true).prop('disabled', true);
+		$('#edit__radio_2g__channel_id,#edit__radio_5g__channel_id').prop('disabled', false);
 	}	
 	
-	diagEditAP.dialog('open');
+	$("#editAP").dialog('open');
+}
+
+function openNaps(mac) {
+	dtReloadData(oTabNaps, oAP.APs[mac].naps);
+	$("#dialog_naps").dialog('open');
+}
+
+function setConfigDefault(conf) {
+	var radio_2g = ObjClone(edit_radio_2g);
+	var radio_5g = ObjClone(edit_radio_5g);
+	if (typeof(conf['edit']['radio_2g']) != "undefined") {
+		conf['edit']['radio_2g'] = radio_2g;
+	}
+	
+	if (typeof(conf['edit']['radio_5g']) != "undefined") {
+		conf['edit']['radio_5g'] = radio_5g;
+	}
+}
+
+//保存配置
+function saveConfAp() {
+	var macarr = [],
+		obj = {},
+		ap = checkConfigKey(nodeEdit[0]);
+
+	var apedit = jsonTraversal(ap, jsTravGet);
+	
+	for (var i = nodeEdit.length - 1; i >= 0; i--) {
+		macarr.push(nodeEdit[i].mac);
+	};
+
+	obj.edit = apedit.edit;
+	obj.aps = macarr;
+	
+	//工作信道批量
+	if (macarr.length > 1) {
+		if ($(".channel_2g_enable").is(":checked")) {
+			obj.edit.radio_2g.batch_enable = "1";
+		} else {
+			obj.edit.radio_2g.batch_enable = "0";
+		}
+		
+		if ($(".channel_5g_enable").is(":checked")) {
+			obj.edit.radio_5g.batch_enable = "1";
+		} else {
+			obj.edit.radio_5g.batch_enable = "0";
+		}
+	}
+
+	cgicall('ApmUpdateAps', obj, function(d) {
+		if (d.status == 0) {
+			initData();
+		} else {
+			alert("保存失败！" + (d.data ? d.data : ""));
+		}
+		$("#editAP").dialog('close');
+	});
+}
+
+function DoDeleteAPs() {
+	var arr = [];
+	var oAPs = dtGetSelected(oTabAPs);
+	for (var i = oAPs.length - 1; i >= 0; i--) {
+		arr.push(oAPs[i].mac);
+	}
+	cgicall('ApmDeleteAps', arr, function(d) {
+		if (d.status == 0) {
+			initData();
+		} else {
+			alert("删除失败！" + (d.data ? d.data : ""));
+		}
+	});
+}
+
+function DoAPsReset() {
+	var arr = [];
+	var oAPs = dtGetSelected(oTabAPs);
+	for (var i = oAPs.length - 1; i >= 0; i--) {
+		arr.push(oAPs[i].mac);
+	}
+	var obj = {};
+	obj.cmd = 'rebootErase';
+	obj.data = arr;
+	cgicall('ApmExecCommands', obj, function(d) {
+		if (d.status == 0) {
+			initData();
+			alert("正在恢复出厂配置，稍后将重新上线...");
+		} else {
+			alert("恢复出厂配置失败！" + (d.data ? d.data : ""));
+		}
+	});
+}
+
+function DoUpdateFireware() {
+	var aAPs = [];
+	var oAPs = dtGetSelected(oTabAPs);
+	for (var i = oAPs.length - 1; i >= 0; i--) {
+		aAPs.push(oAPs[i].mac);
+	}
+
+	cgicall('ApmUpdateFireware', aAPs, function(d) {
+		if (d.status == 0) {
+			initData();
+			alert("正在升级，稍后将重新上线...");
+		} else {
+			alert("升级失败！" + (d.data ? d.data : ""));
+		}
+	});
+}
+
+function DoAPsRestart() {
+	//获取选择ap列表
+	var aAPs = [];
+	var oAPs = dtGetSelected(oTabAPs);
+	for (var i = oAPs.length - 1; i >= 0; i--) {
+		aAPs.push(oAPs[i].mac);
+	};
+	var obj = {};
+	obj.cmd = 'rebootAps';
+	obj.data = aAPs;
+	cgicall('ApmExecCommands', obj, function(d) {
+		if (d.status == 0) {
+			alert("重启成功，稍后将重新上线...");
+			initData();
+		} else {
+			alert("重启失败！" + (d.data ? d.data : ""));
+		}
+	});
+}
+
+function checkConfigKey(conf) {
+	var radio_2g = ObjClone(edit_radio_2g);
+	var radio_5g = ObjClone(edit_radio_5g);
+	for (var k in radio_2g) {
+		if (typeof(conf['edit']['radio_2g']) == "undefined") break;
+		if (typeof(conf['edit']['radio_2g'][k]) == "undefined" || conf[k] == '') {
+			conf['edit']['radio_2g'][k] = radio_2g[k];
+		}
+	}
+	
+	for (var k in radio_5g) {
+		if (typeof(conf['edit']['radio_5g']) == "undefined") break;
+		if (typeof(conf['edit']['radio_5g'][k]) == "undefined" || conf[k] == '') {
+			conf['edit']['radio_5g'][k] = radio_5g[k];
+		}
+	}
+	
+	return conf;
 }
 
 function set_country_channel(obj) {
@@ -596,199 +721,6 @@ function set_country_channel(obj) {
 	channel_5gSet(obj);
 	country_2gSet(obj); //国家码对应信道
 	country_5gSet(obj);
-}
-
-function OnRestartNew() {
-	GetSelectedAps()
-	if (aAPNodesEdit.length < 1) {
-		alert('选择要重启的AP！');
-		return;
-	};
-	diagRestart.dialog('open');
-}
-
-function OnUpgradeFireware() {
-	if (AttachFirewareVer())
-		$('#upgradeAP').dialog('open');
-}
-
-//页面初始化 加载固件版本
-function BuildFwList() {
-	cgicall('RDS.ApmFirewareList("")', function(d) {
-		var strHtml = '';
-		var aList = d;
-		for (var i = aList.length - 1; i >= 0; i--) {
-			if (aList[i].length == 0) {
-				continue;
-			};
-			strHtml += '<li>' + aList[i] + '</li>';
-			/*
-			if (i == 0) {
-				strHtml += '<li><label><input name="VerAcFirw" value="' + aList[i] + '" type="radio" checked/>' + aList[i] + '</label></li>';
-			} else {
-				strHtml += '<li><label><input name="VerAcFirw" value="' + aList[i] + '" type="radio"/>' + aList[i] + '</label></li>';
-			}
-			*/
-		};
-		$('#ul_VerAcFirw').html(strHtml);
-	});
-}
-
-function AttachFirewareVer() {
-	GetSelectedAps();
-	if (aAPNodesEdit.length < 1) {
-		alert('选择要升级的AP');
-		return false;
-	};
-	/*
-	var oAP = aAPNodesEdit[0];
-	var prefix = oAP.firmware_ver.split('.');
-	if (prefix.length < 3) {
-		alert('请重启！');
-		return false;
-	};
-	
-	$('#ul_VerAcFirw').find('input[name="VerAcFirw"]').each(function(i, o) {
-		var curr = $(this);
-		if (curr.val().search(prefix[0] + '.' + prefix[1] + '.' + prefix[2]) >= 0) {
-			curr.attr('checked', 'checked');
-			return false;
-		} else {
-			curr.removeAttr('checked');
-		}
-	});
-	*/
-	return true;
-}
-
-function OnDownloadApLog() {
-	GetSelectedAps();
-	if (aAPNodesEdit.length < 1) {
-		alert('选择要下载日志的AP');
-		return false;
-	};
-	var aAPs = [];
-	for (var i = aAPNodesEdit.length - 1; i >= 0; i--) {
-		aAPs.push(aAPNodesEdit[i].mac);
-	};
-
-	$.messager.progress({
-		'text': '加载中...'
-	});
-	cgicall('RDS.DownloadApLog(%j)', aAPs, function(d) {
-		$.messager.progress('close');
-		if (d == '1') {
-			window.location.href = '/aplog.tar';
-		} else {
-			alert('下载失败！');
-		}	
-	});	
-}
-
-function OnResetAPs() {
-	GetSelectedAps();
-	if (aAPNodesEdit.length < 1) {
-		alert('选择要恢复的AP');
-		return false;
-	};
-	$('#resetAP').dialog('open');
-}
-
-function OnDeleteAPs() {
-	GetSelectedAps();
-	if (aAPNodesEdit.length < 1) {
-		alert('选择要删除的不在线AP');
-		return false;
-	};
-	for (var k in aAPNodesEdit) {
-		if (aAPNodesEdit[k].state.status == '1') {
-			alert('只能删除离线AP！');
-			return false;
-		}
-	}
-	$('#delAP').dialog('open');
-}
-
-function OnLanDHCPChg() {
-	var en = $('#edit__ip_distribute').val();
-	if (en == 'static') {
-		en = false;
-	} else {
-		en = true;
-	}
-	$('#edit__ip_address').attr('disabled', en);
-	$('#edit__netmask').attr('disabled', en);
-	$('#edit__gateway').attr('disabled', en);
-	
-	//common editor
-	if (aAPNodesEdit.length > 1) {
-		$('#edit__nick_name').attr('disabled', true);
-		$('#edit__ip_address').attr('disabled', true);
-		$('#edit__netmask').attr('disabled', true);
-		$('#edit__gateway').attr('disabled', true);
-	} else {
-		$('#edit__nick_name').attr('disabled', false);
-	}
-}
-
-function onWorkMode(o) {
-	if (o == 'hybrid') {
-		$('.mode_hybrid,.mode_normal').show().find('input').attr('disabled', false);
-		$('.mode_monitor').hide().find('input').attr('disabled', true);
-	} else if (o == 'normal') {
-		$('.mode_hybrid,.mode_monitor,.mode_normal').hide().find('input').attr('disabled', true);
-	} else if (o == 'monitor') {
-		$('.mode_hybrid').hide().find('input').attr('disabled', true);
-		$('.mode_monitor,.mode_normal').show().find('input').attr('disabled', false);
-	}
-}
-
-function OnSelectAll(){
-	dtSelectAll(oTabAPs);
-}
-
-function OnHideCol() {
-	$("#hide_column ul li input").each(function(index, element) {
-		$(element).attr('checked', true);
-		for (var i=0; i<hideColumns.length; i++) {
-			if (hideColumns[i] == $(element).val()) {
-				$(element).attr('checked', false);
-				break;
-			}
-		}
-	})
-	diagHideColumn.dialog('open');
-}
-
-function OnGetApLog() {
-	if (ApLogMac && ApLogMac != "") {
-		GetSelectedAps(ApLogMac);
-	} else {
-		GetSelectedAps();
-	}
-	GetSelectedAps("keep", true);
-	if (aAPNodesEdit.length < 1) {
-		return;
-	}
-	cgicall('RDS.GetApLog(%j)', aAPNodesEdit[0].mac, function(d) {
-		$('#LogRuntime').val(d);
-	});
-}
-
-function OnChannelEn2() {
-	if ($('.channel_2g_enable').attr("checked") == "checked") {
-		$('#edit__radio_2g__channel_id').attr('disabled', false);
-	} else {
-		$('#edit__radio_2g__channel_id').attr('disabled', true);
-	}
-}
-
-function OnChannelEn5() {
-	if ($('.channel_5g_enable').attr("checked") == "checked") {
-		$('#edit__radio_5g__channel_id').attr('disabled', false);
-	} else {
-		$('#edit__radio_5g__channel_id').attr('disabled', true);
-	}
 }
 
 function initEvent() {
@@ -812,174 +744,164 @@ function initEvent() {
 	
 	$('.restart').on('click', OnRestartNew); //重启AP
 	$('.upgrade').on('click', OnUpgradeFireware); //升级AP
-	$('.edit').on('click', function() {set_edit();}); //编辑
+	$('.edit').on('click', function() { editAps(); }); //编辑
 	$('.downloadaplog').on('click', OnDownloadApLog); //下载AP日志
 	$('.resetAPs').on('click', OnResetAPs); //恢复出厂配置
 	$('.deleteAPs').on('click', OnDeleteAPs); //删除
-	$('.checkall').on('click', OnSelectAll); //全选
 	$('#edit__ip_distribute').on('change', OnLanDHCPChg); //DHCP分配
 	$('#edit__work_mode').on('change', function() {
 		var mode = $(this).find('option:selected').val();
-		onWorkMode(mode);
+		OnWorkMode(mode);
 	}); //工作模式
-	$('body').on('click', '.btn_col', OnHideCol);
+	$('.btn_col').on('click', OnHideCol);
 	$('#btn_exec_cmd').on('click', OnGetApLog);
 	$('.channel_2g_enable').on('click', OnChannelEn2);
 	$('.channel_5g_enable').on('click', OnChannelEn5);
+	$('.checkall').on('click', OnSelectAll); //全选
+	
+	$("#tabs_APConf, #tabs_RadioConf").tabs();
+	$( "#editAP" ).tooltip();
 }
 
-function DoAPsRestart() {
-	//获取选择ap列表
-	var aAPs = [];
-	var oAPs = dtGetSelected(oTabAPs);
-	for (var i = oAPs.length - 1; i >= 0; i--) {
-		aAPs.push(oAPs[i].Name);
-	};
-	var obj = {};
-	obj.cmd = 'rebootAps';
-	obj.data = aAPs;
-	
-	$.messager.progress({
-		'text': '重启中，30秒左右重新上线...'
-	});
-	cgicall('RDS.ApmExecCommands(%j)', obj, function(d) {
-		$.messager.progress('close');
-		initData();
-	});
-}
-
-function DoUpdateFireware() {
-	var aAPs = [];
-	var oAPs = dtGetSelected(oTabAPs);
-	for (var i = oAPs.length - 1; i >= 0; i--) {
-		aAPs.push(oAPs[i].Name);
-	};
-	/*
-	function GetVerAcSelected() {
-		var re = '';
-		$('#ul_VerAcFirw').find('input[name="VerAcFirw"]').each(function(index, ctl) {
-			//alert(a);
-			if ($(ctl).attr('checked')) {
-				re = $(ctl).attr('value');
-			}
-		});
-		return re;
-	}
-	
-	var fwv = GetVerAcSelected();
-	if (!fwv || fwv == '') {
+function OnRestartNew() {
+	GetSelectedAps()
+	if (nodeEdit.length < 1) {
+		alert('选择要重启的AP！');
 		return;
-	};
-	var str = {};
-	str.mac = aAPs;
-	str.fwv = fwv;
-	str = JSON.stringify(str);
-	*/
-	$.messager.progress({
-		'text': '升级中...'
-	});
-	cgicall('RDS.ApmUpdateFireware(%j)', aAPs, function(d) {
-		$.messager.progress('close');
-		initData();
-	});
-}
-
-
-function isNullObjFlag(obj) {
-	for(var i in obj){
-        if(obj.hasOwnProperty(i)){
-            return false;
-        }
-    }
-    return true;
-}
-
-function checkConfigKey(conf) {
-	var radio_2g = cloneObj(edit_radio_2g);
-	var radio_5g = cloneObj(edit_radio_5g);
-	for (var k in radio_2g) {
-		if (typeof(conf['edit']['radio_2g']) == "undefined") break;
-		if (typeof(conf['edit']['radio_2g'][k]) == "undefined" || conf[k] == '') {
-			conf['edit']['radio_2g'][k] = radio_2g[k];
-		}
 	}
-	
-	for (var k in radio_5g) {
-		if (typeof(conf['edit']['radio_5g']) == "undefined") break;
-		if (typeof(conf['edit']['radio_5g'][k]) == "undefined" || conf[k] == '') {
-			conf['edit']['radio_5g'][k] = radio_5g[k];
-		}
+	$("#restartAP").dialog('open');
+}
+
+function OnUpgradeFireware() {
+	GetSelectedAps();
+	if (nodeEdit.length < 1) {
+		alert('选择要升级的AP！');
+		return;
 	}
-	
-	return conf;
+	$('#upgradeAP').dialog('open');
 }
 
-function setConfigDefault(conf) {
-	var radio_2g = cloneObj(edit_radio_2g);
-	var radio_5g = cloneObj(edit_radio_5g);
-	if (typeof(conf['edit']['radio_2g']) != "undefined") {
-		conf['edit']['radio_2g'] = radio_2g;
+function OnDownloadApLog() {
+	GetSelectedAps();
+	if (nodeEdit.length < 1) {
+		alert('选择要下载日志的AP！');
+		return;
 	}
-	
-	if (typeof(conf['edit']['radio_5g']) != "undefined") {
-		conf['edit']['radio_5g'] = radio_5g;
-	}
-	
-}
-
-//保存配置
-function saveConfAp() {
-	var ap = checkConfigKey(aAPNodesEdit[0]);
-	jsonTraversal(ap, jsTravGet);
-	var aApIDs = [];
-	
-	for (var i = aAPNodesEdit.length - 1; i >= 0; i--) {
-		aApIDs.push(aAPNodesEdit[i].Name);
-	};
-	
-	var obj = {};
-	obj.edit = ap.edit;
-	obj.aps = aApIDs;
-
-	$.messager.progress({
-		'text': 'Loading...'
-	});
-
-	cgicall('RDS.ApmUpdateAps(%j)', obj, function(d) {
-		initData();
-		$.messager.progress('close');
-		diagEditAP.dialog('close');
-	});
-}
-
-function DoDeleteAPs() {
-	var ar = [];
-	var oAPs = dtGetSelected(oTabAPs);
-	for (var i = oAPs.length - 1; i >= 0; i--) {
-		ar.push(oAPs[i].mac);
-	};
-	cgicall('RDS.ApmDeleteAps(%j)', ar, function(d) {
-		initData();
-	});
-}
-
-function DoAPsReset() {
-	//获取选择ap列表
 	var aAPs = [];
-	var oAPs = dtGetSelected(oTabAPs);
-	for (var i = oAPs.length - 1; i >= 0; i--) {
-		aAPs.push(oAPs[i].Name);
-	};
-	var obj = {};
-	obj.cmd = 'rebootErase';
-	obj.data = aAPs;
-	$.messager.progress({
-		'text': '恢复出厂配置，1分钟左右重新上线...'
+	for (var i = nodeEdit.length - 1; i >= 0; i--) {
+		aAPs.push(nodeEdit[i].mac);
+	}
+
+	cgicall('DownloadApLog', aAPs, function(d) {
+		if (d.status == 0) {
+			window.location.href = '/aplog.tar';
+		} else {
+			alert('下载失败！');
+		}	
+	});	
+}
+
+function OnResetAPs() {
+	GetSelectedAps();
+	if (nodeEdit.length < 1) {
+		alert('选择要恢复的AP！');
+		return;
+	}
+	$('#resetAP').dialog('open');
+}
+
+function OnDeleteAPs() {
+	GetSelectedAps();
+	if (nodeEdit.length < 1) {
+		alert('选择要删除的不在线AP！');
+		return;
+	}
+	for (var k in nodeEdit) {
+		if (nodeEdit[k].state.status == '1') {
+			alert('只能删除离线AP！');
+			return;
+		}
+	}
+	$('#delAP').dialog('open');
+}
+
+function OnHideCol() {
+	$("#hide_column ul li input").each(function(index, element) {
+		$(element).prop('checked', true);
+		for (var i = 0; i < hideColumns.length; i++) {
+			if (hideColumns[i] == $(element).val()) {
+				$(element).prop('checked', false);
+				break;
+			}
+		}
+	})
+	$("#hide_column").dialog('open');
+}
+
+function OnGetApLog() {
+	if (ApLogMac && ApLogMac != "") {
+		GetSelectedAps(ApLogMac);
+	} else {
+		GetSelectedAps();
+	}
+	if (nodeEdit.length < 1) {
+		return;
+	}
+	cgicall('GetApLog', nodeEdit[0].mac, function(d) {
+		if (d.status == 0) {
+			$('#LogRuntime').val(d.data);
+		}
 	});
-	cgicall('RDS.ApmExecCommands(%j)', obj, function(d) {
-		$.messager.progress('close');
-		initData();
-	});
+}
+
+function OnChannelEn2() {
+	if ($('.channel_2g_enable').is(":checked")) {
+		$('#edit__radio_2g__channel_id').prop('disabled', false);
+	} else {
+		$('#edit__radio_2g__channel_id').prop('disabled', true);
+	}
+}
+
+function OnChannelEn5() {
+	if ($('.channel_5g_enable').is(":checked")) {
+		$('#edit__radio_5g__channel_id').prop('disabled', false);
+	} else {
+		$('#edit__radio_5g__channel_id').prop('disabled', true);
+	}
+}
+
+function OnSelectAll() {
+	var that = this;
+	dtSelectAll(that, oTabAPs);
+}
+
+function OnLanDHCPChg() {
+	var en = $('#edit__ip_distribute').val();
+	if (en == 'static') {
+		en = false;
+	} else {
+		en = true;
+	}
+	$('#edit__ip_address,#edit__netmask,#edit__gateway').prop('disabled', en);
+	
+	//common editor
+	if (nodeEdit.length > 1) {
+		$('#edit__nick_name,#edit__ip_address,#edit__netmask,#edit__gateway').prop('disabled', true);
+	} else {
+		$('#edit__nick_name').prop('disabled', false);
+	}
+}
+
+function OnWorkMode(o) {
+	if (o == 'hybrid') {
+		$('.mode_hybrid,.mode_normal').show().find('input').prop('disabled', false);
+		$('.mode_monitor').hide().find('input').prop('disabled', true);
+	} else if (o == 'normal') {
+		$('.mode_hybrid,.mode_monitor,.mode_normal').hide().find('input').prop('disabled', true);
+	} else if (o == 'monitor') {
+		$('.mode_hybrid').hide().find('input').prop('disabled', true);
+		$('.mode_monitor,.mode_normal').show().find('input').prop('disabled', false);
+	}
 }
 
 function channel_2gSet(obj) {
@@ -1113,11 +1035,5 @@ function toSameNum(d, n) {
 	return str;
 }
 
-function cloneObj(myObj) { 
-	if (typeof(myObj) != 'object') return myObj; 
-	if (myObj == null) return myObj; 
-	var myNewObj = new Object(); 
-	for(var i in myObj) 
-		myNewObj[i] = cloneObj(myObj[i]); 
-	return myNewObj; 
-}
+
+

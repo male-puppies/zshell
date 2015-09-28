@@ -18,10 +18,8 @@
 				<tr>
 					<td>序号</td>
 					<td>认证名</td>
-					<td>描述</td>
 					<td>IP范围</td>
 					<td>认证方式</td>
-					<td>新用户认证方式</td>
 					<td>调整优先级</td>
 					<td>删除</td>
 				</tr>
@@ -48,17 +46,17 @@
 			<div class="cbi-value clearfix">
 				<label class="cbi-value-title" for="iprange">IP范围</label>
 				<div class="cbi-value-field">
-					<textarea id="iprange" type="text" verify=""></textarea>
-					<span class="icon-tip" title="指定‘自动认证用户’自动划分到哪个组，&#10;支持单个IP地址或地址范围，一行一个。例如：&#10;192.168.0.1-192.168.0.255&#10;192.168.0.100"></span>
+					<input id="iprange" type="text" verify="" />
+					<span class="icon-tip" title="指定‘自动认证用户’自动划分到哪个组，&#10;支持单个IP地址或地址范围。例如：&#10;192.168.0.100 或者&#10;192.168.0.1-192.168.0.255"></span>
 				</div>
 			</div>
 			<div class="cbi-value clearfix">
 				<label class="cbi-value-title">认证方式</label>
 				<div class="cbi-value-field">
-					<label><input type="radio" name="type" value="0" />自动认证</label>
+					<label><input type="radio" id="type" name="type" checked="checked" value="auto" />自动认证</label>
 				</div>
 				<div class="cbi-value-field">
-					<label><input type="radio" name="type" value="1" />WEB认证</label>
+					<label><input type="radio" name="type" checked="" value="web" />WEB认证</label>
 				</div>
 			</div>
 		</fieldset>

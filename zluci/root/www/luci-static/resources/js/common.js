@@ -14,13 +14,13 @@
 		switch(argc){
 			case 1:
 				if (typeof(arguments[0]) === "string") {
-					obj["cmd"] = arguments[0];
+					obj["key"] = arguments[0];
 				} else {
 					console.log("error cgicall...")
 				}
 				break;
 			case 2:
-				obj["cmd"] = arguments[0];
+				obj["key"] = arguments[0];
 				obj["data"] = arguments[1];
 				break;
 			default:
@@ -28,38 +28,34 @@
 				break;
 		}
 
-		$.post(url, obj, callback, "json");
+		var cmdObj = {
+			"cmd": JSON.stringify(obj)
+		};
+		$.post(url, cmdObj, callback, "json");
 	}
 	
-	function jsonTraversal(obj, func, prefix) {
-		var oset = obj;
-		for (var k in obj) {
-			if (typeof(obj[k]) == 'object') {
-				oset[k] = recurseTravSubNode(obj[k], k, func, prefix);
+	function jsonTraversal(obj, func) {
+		var oset = ObjClone(obj);
+		for (var k in oset) {
+			if (typeof(oset[k]) == 'object') {
+				oset[k] = recurseTravSubNode(oset[k], k, func);
 			} else {
 				var fp = k;
-				if (typeof(prefix) == 'string') {
-					fp = prefix + '__' + k;
-				};
-				oset[k] = func(fp, obj[k]);
+				oset[k] = func(fp, oset[k]);
 			}
 		}
 		return oset;
 	}
 	
 	//遍历所有节点
-	function recurseTravSubNode(o, parent, func, prefix) {
-		var oset = o;
+	function recurseTravSubNode(o, parent, func) {
+		var oset = ObjClone(o);
 		for (var k in o) {
 			var fp = parent + '__' + k;
 			if (typeof(o[k]) == 'object') {
 				//还有子节点.
-				oset[k] = recurseTravSubNode(o[k], fp, func, prefix);
+				oset[k] = recurseTravSubNode(o[k], fp, func);
 			} else {
-				//最后一级
-				if (typeof(prefix) == 'string') {
-					fp = prefix + '__' + fp;
-				};
 				oset[k] = func(fp, o[k]);
 			}
 		}
@@ -79,19 +75,23 @@
 		
 		switch (type) {
 			case "checkbox":
-				if (typeof(v) == 'boolean') {
-					doc.attr('checked', v);
-				} else if (typeof(v) == 'string') {
-					doc.attr('checked', (v == doc.val() ? true : false));
+				var arr = doc.val().split(" ");
+				var str = v.toString();
+				
+				if (str == arr[0]) {
+					doc.prop("checked", true);
+				} else {
+					doc.prop("checked", false);
 				}
 				break;
 
 			case "radio":
-				$('input:radio[name="'+ fp +'"]').each(function(index, element) {
+				var that = doc.attr("name");
+				$('input:radio[name="'+ that +'"]').each(function(index, element) {
 					if ($(element).val() == v) {
-						$(element).attr('checked', true);
+						$(element).prop("checked", true);
 					} else {
-						$(element).attr('checked', false);
+						$(element).prop("checked", false);
 					}
 				});
 				break;
@@ -111,15 +111,37 @@
 
 		switch (type) {
 			case 'checkbox':
-				if (typeof(v) == 'boolean') {
-					nv = (doc.is(':checked') ? true : false);
-				} else if (typeof(v) == 'string') {
-					nv = (doc.is(':checked') ? doc.val() : "0");
-				};
+				var arr = doc.val().split(" ");
+				var str = v.toString();
+				
+
+				if (arr.length == 1) {
+					if (arr[0] == "1") {
+						arr[1] = "0";
+					} else if (arr[0] == "true") {
+						arr[1] = "false";
+					} else {
+						console.log(fp + 'checkbox value fail');
+					}
+				}
+				
+				if (typeof v == "boolean") {
+					arr[0] = true;
+					arr[1] = false;
+				} else if (typeof v == "number") {
+					arr[0] = parseInt(arr[0]);
+					arr[1] = parseInt(arr[1]);
+				}
+
+				nv = doc.is(":checked") ? arr[0] : arr[1];
 				break;
 
 			case 'radio':
-				nv = $('input:radio[name="'+ fp +'"]:checked').val();
+				var that = doc.attr("name");
+				nv = $('input:radio[name="'+ that +'"]:checked').val();
+				if (typeof v == "number") {
+					nv = parseInt(nv);
+				}
 				break;
 
 			default:
@@ -164,27 +186,6 @@
 		}
 		return false;
 	}
-	
-	function ObjToArray(o) {
-        var aar = [];
-        var i = 0;
-        for (key in o) {
-            if (typeof(o[key]) == 'object') {
-                if (!o[key].Name) {
-                    o[key].Name = key;
-                    o[key].aaIndex = i++;
-                }
-            } else {
-                var temp = o[key];
-                o[key] = {};
-                o[key].Name = key;
-                o[key].Value = temp;
-                o[key].aaIndex = i++;
-            }
-            aar.push(o[key]);
-        }
-        return aar;
-    }
 
 	function ObjClone(obj) {
 		var o;
@@ -210,23 +211,48 @@
 		return o;
 	}
 	
-	
+	function dtObjToArray(o) {
+		var arr = [],
+			obj = ObjClone(o);
+
+		if (typeof obj == 'object') {
+			if (Object.prototype.toString.call(obj) === '[object Array]') {
+				arr = obj;
+			} else if (Object.prototype.toString.call(obj) === '[object Object]') {
+				for (key in obj) {
+					// if (typeof obj[key] != 'object') {
+						// var temp = obj[key];
+						// obj[key] = {};
+						// obj[key].Value = temp;
+					// }
+					arr.push(obj[key]);
+				}
+			} else {
+				arr.push(obj);
+			}
+		} else {
+			arr.push(obj);
+		}
+		return arr;
+    }
+
 	function dtReloadData(oDt, aaData, keepPage, oFun) {
 		if (ObjCountLength(aaData) == 0) {
-			oDt.fnClearTable(true);
+			oDt.fnClearTable();
 			return;
 		}
         var oSetting = oDt.fnSettings();
         var page = oSetting._iDisplayStart / oSetting._iDisplayLength;
-        oDt.fnClearTable(true);
-        oDt.fnAddData(aaData, true);
-		//过滤
+        oDt.fnClearTable();
+        oDt.fnAddData(aaData);
+
+		if (keepPage != 'undefined' && keepPage) {
+            oDt.fnPageChange(page);
+        }
+
 		if (oFun && typeof oFun == 'function') {
 			oFun();
-		}
-        if (keepPage != 'undefined' && keepPage) {
-            oDt.fnPageChange(page);
-        };
+		} 
     }
 	
 	function dtHideColumn(oDt, hd) {
@@ -256,58 +282,69 @@
 	}
 	
 	function dtGetSelected(oDt) {
-        var dRows = new Array();
+        var dRows = [];
         var rs = oDt.fnGetNodes();
         for (var i = rs.length - 1; i >= 0; i--) {
             if($(rs[i]).hasClass('row_selected')){
                 dRows.push(oDt.fnGetData(rs[i]));
             }
-        };
+        }
         return dRows;
     }
-	
-	function dtSelectAll(oDt, currentPage) {
-        var rs = oDt.fnGetNodes();
-        var opt = oDt.fnSettings();
+
+	function dtSelectAll(that, oDt, currentPage) {
+		var check = $(that).is(":checked");
         if (currentPage) {
-            oDt.find('tbody tr').each(function(index){
-                var row = $(this);
-                var check = false;
-				if ($(this).find('td input[type="checkbox"]').attr('disabled') == 'disabled') return true;
-                row.toggleClass('row_selected');
-                if (row.hasClass('row_selected')) {
-                    check = true;
-                };
-                row.find('td input[type="checkbox"]').attr('checked', check);
+            oDt.find('tbody tr').each(function(index, element) {
+                var row = $(element);
+				if (row.find('td input[type="checkbox"]').is(":disabled")) return true;
+                row.find('td input[type="checkbox"]').prop("checked", check);
+				row_select_event(row);
             });
         } else {
+			var rs = oDt.fnGetNodes();
             for (var i = rs.length - 1; i >= 0; i--) {
-                var check = false;
-				if ($(rs[i]).find('td input[type="checkbox"]').attr('disabled') == 'disabled') continue;
-                $(rs[i]).toggleClass('row_selected');
-                if ($(rs[i]).hasClass('row_selected')) {
-                    check = true;
-                };
-                $(rs[i]).find('td input[type="checkbox"]').attr('checked', check);
+				var _this = $(rs[i]);
+				if (_this.find('td input[type="checkbox"]').is(":disabled")) continue;
+                _this.find('td input[type="checkbox"]').prop("checked", check);
+				row_select_event(_this);
             };
         }
-        
     }
 	
+    function dtBindRowSelectEvents(row) {
+		var that = $(row);
+		that.find('td input[type="checkbox"]').off('click', function() {
+			row_select_event(that)
+		});
+        that.find('td input[type="checkbox"]').on('click',  function() {
+			row_select_event(that)
+		});
+    }
+	
+	function row_select_event(that) {
+		if (that.find('td input[type="checkbox"]').is(":checked")) {
+			that.addClass("row_selected");
+		} else {
+			that.removeClass("row_selected");
+		}
+    };
+	
 	/* cgi */
-	root.cgicall =			cgicall;			//post
-	root.jsonTraversal =	jsonTraversal;		//取值赋值入口
-	root.jsTravGet =		jsTravGet;			//取值
-	root.jsTravSet =		jsTravSet;			//赋值
+	root.cgicall =					cgicall;				//post
+	root.jsonTraversal =			jsonTraversal;			//取值赋值入口
+	root.jsTravGet =				jsTravGet;				//取值
+	root.jsTravSet =				jsTravSet;				//赋值
 
 	/* object */
-	root.ObjToArray =		ObjToArray;			//对象转数组
-	root.ObjCountLength =	ObjCountLength;		//对象长度
-	root.ObjClone =			ObjClone;			//对象克隆
+	root.ObjCountLength =			ObjCountLength;			//对象长度
+	root.ObjClone =					ObjClone;				//对象克隆
 
 	/* datatable */
-	root.dtReloadData =		dtReloadData;		//重绘datatable oFun为过滤
-	root.dtHideColumn =		dtHideColumn;		//隐藏datatable列
-	root.dtGetSelected =	dtGetSelected;		//获取datatable选中的列
-	root.dtSelectAll =		dtSelectAll;		//选中所有datatable列
+	root.dtObjToArray =				dtObjToArray;			//对象强制转数组 去适应datatable
+	root.dtReloadData =				dtReloadData;			//重绘datatable oFun为过滤
+	root.dtHideColumn =				dtHideColumn;			//隐藏datatable列
+	root.dtGetSelected =			dtGetSelected;			//获取datatable选中的列
+	root.dtSelectAll =				dtSelectAll;			//选中所有datatable列
+	root.dtBindRowSelectEvents = 	dtBindRowSelectEvents;	//绑定选择事件
 })(this);
