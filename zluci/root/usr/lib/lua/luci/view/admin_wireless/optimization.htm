@@ -1,0 +1,84 @@
+<%+header%>
+
+<link rel="stylesheet" type="text/css" href="<%=resource%>/js/themes_easyui/default/easyui.css" media="screen"/>
+<link rel="stylesheet" type="text/css" href="<%=media%>/css/managecss.css" media="screen" />
+<link rel="stylesheet" type="text/css" href="<%=resource%>/js/themes_easyui/icon.css" media="screen"/>
+
+<script type="text/javascript" src="<%=resource%>/js/jquery.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/jquery.easyui.min.js"></script>
+<!--script type="text/javascript" src="<%=resource%>/js/jquery.ui.ext.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/jquery.ui.cmx.js"></script-->
+<script type="text/javascript" src="<%=resource%>/js/jquery.ext.verify.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/jquery.dataTables.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/jquery.dataTables.ext.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/underscore.string.js"></script>
+<!--script type="text/javascript" src="<%=resource%>/js/gozila.js"></script-->
+<script type="text/javascript" src="<%=resource%>/js/optimization.js"></script>
+
+<div class="container_12">
+	<h2 style="padding-bottom:20px;"><a id="content" name="content">无线优化</a></h2>
+	<div class="easyui-panel">
+		<div class="form-horizontal">
+			<fieldset>
+				<legend>AP隔离</legend>
+				<div class="control-group clearfix">
+					<label class="control-label3" for="isolation__ienable">启用</label>
+					<div class="controls3" style="line-height:30px;">
+						<input type="checkbox" value="1" id="isolation__ienable" />
+					</div>
+				</div>
+			</fieldset>
+
+			<fieldset>
+				<legend>射频提速</legend>
+				<div class="control-group clearfix">
+					<label class="control-label3" for="broadcast__inspeed">广播提速</label>
+					<div class="controls3">
+						<select id="broadcast__inspeed" style="width:150px;">
+							<option value="0">自动提速</option>
+							<option value="2">2 Mbps</option>
+							<option value="5.5">5.5 Mbps</option>
+							<option value="11">11 Mbps</option>
+							<option value="24">24 Mbps</option>
+							<option value="48">48 Mbps</option>
+						</select>
+					</div>
+				</div>
+				<div class="control-group clearfix">
+					<label class="control-label3" for="broadcast__rate">终端速率限制</label>
+					<div class="controls3">
+						<select id="broadcast__rate" style="width:150px;">
+							<option value="0">关闭</option>
+							<option value="2" selected="selected">1 Mbps</option>
+							<option value="4">2 Mbps</option>
+							<option value="11">5.5 Mbps</option>
+						</select>
+						<span class="icon-tip pointer" title="接入终端速率小于或等于指定值时禁止接入."></span>
+					</div>
+				</div>
+				<div class="control-group clearfix">
+					<label class="control-label3" for="broadcast__mult">启用多播优化</label>
+					<div class="controls3" style="line-height:30px;">
+						<input type="checkbox" value="1" id="broadcast__mult" />
+					</div>
+				</div>
+			</fieldset>
+			
+			<fieldset>
+				<legend>射频调度</legend>
+				<div class="control-group clearfix">
+					<label class="control-label3" for="average__enable">启用用户间平均分配带宽</label>
+					<div class="controls3" style="line-height:30px;">
+						<input type="checkbox" value="1" id="average__enable" />
+					</div>
+				</div>
+			</fieldset>
+		</div>
+	</div>
+
+	<div class="cbi-page-actions" style="margin-top:70px;">
+		<input type="button" class="btn cbi-button cbi-button-apply" id="btn_submit" value="保存" />
+	</div>
+</div>
+
+<%+footer%>

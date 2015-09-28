@@ -1,0 +1,131 @@
+<%+header%>
+
+<link rel="stylesheet" type="text/css" media="screen" href="<%=resource%>/css/jquery-ui.css" />
+<link rel="stylesheet" type="text/css" media="screen" href="<%=resource%>/css/jquery.dataTables.css" />
+
+<script type="text/javascript" src="<%=resource%>/js/black/jquery-ui.min.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/black/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/common.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/wlanconfig.js"></script>
+
+<div class="cbi-map" id="cbi-apstatus">
+	<h2><a id="content" name="content">WLAN管理</a></h2>
+	<div class="cbi-map-descr"></div>
+	
+	<fieldset class="cbi-section">
+		<table id="Wlan_config">
+			<thead>
+				<tr>
+					<td>序号</td>
+					<td>SSID</td>
+					<td>频段</td>
+					<td>加密方式</td>
+					<td>生效AP</td>
+					<td>当前状态</td>
+					<td>
+						<label><input type="checkbox" class="checkall" value="1 0" />全选</label>
+					</td>
+				</tr>
+			</thead>
+		</table>
+		<div class="btn_function">
+			<input type="button" value="新增WLAN" class="cbi-button add_wlan" />
+			<input type="button" value="删除" class="cbi-button del" />
+		</div>
+	</fieldset>
+</div>
+
+<!-- 弹出无线配置对话框 -->
+
+<div class="hide" id="dialog_neighbor">
+	<fieldset>
+	  	<legend>相邻WLAN</legend>
+		<table id="neighbor_list">
+			<thead>
+				<tr>
+					<td>SSID</td>
+					<td>BSSID</td>
+					<td>信道</td>
+					<td>信号强度</td>
+				</tr>
+			</thead>
+		</table>
+	</fieldset>
+</div>
+
+
+<div class="hide" id="addConfig">
+	<form class="form-dialog">
+		<fieldset>
+			<legend>WLAN参数</legend>		
+			<div class="cbi-value clearfix">
+				<label class="cbi-value-title" for="enable">启用</label>
+				<div class="cbi-value-field">
+					<input type="checkbox" id="enable" value="1 0" />
+				</div>
+			</div>
+			<div class="cbi-value clearfix">
+				<label class="cbi-value-title">SSID</label>
+				<div class="cbi-value-field">
+					<input type="text" id="SSID" class="ssid" verify="ssid"/>
+					<span class="icon-tip" title="输入字符串长度小于32个字符,不超过十个中文."></span>
+				</div>
+			</div>
+			<div class="cbi-value clearfix">
+				<label class="cbi-value-title">加密类型</label>
+				<div class="cbi-value-field">
+					<select id="encrypt">
+						<option value="none">不加密</option>
+						<option value="psk2">WPA2-PSK</option>
+						<option value="psk">WPA-PSK</option>
+					</select>
+				</div>
+			</div>
+			<div class="cbi-value clearfix">
+				<label class="cbi-value-title">无线密码</label>
+				<div class="cbi-value-field">
+					<input type="text" id="password" maxlength="32" class="password" verify="wpassword"/>
+					<span class="icon-tip" title="输入数字/字母, 长度: 8~32个字符."></span>
+				</div>
+			</div>
+			<div class="cbi-value clearfix">
+				<label class="cbi-value-title" for="hide">隐藏该SSID</label>
+				<div class="cbi-value-field">
+					<input type="checkbox" id="hide" value="1 0" />
+				</div>
+			</div>
+			<div class="cbi-value clearfix">
+				<label class="cbi-value-title">生效AP列表</label>
+				<div class="cbi-value-field">
+					<label class="efaps_all"><input name="efaps" type="radio" checked="checked"  />对所有AP生效</label><br />
+					<label class="efaps_oth"><input name="efaps" type="radio" /><a style="color:#215EA3" href="javascript:;">选择其它</a></label>
+				</div>
+			</div>
+		</fieldset>
+	</form>
+</div>
+
+<div class="hide" id="checkAps">
+	<fieldset>
+		<legend>生效AP列表</legend>
+		<ul class="ul-checkAps"></ul>
+	</fieldset>
+</div>
+
+<div class="hide" id="effectAps">
+	<fieldset>
+		<legend>WLAN参数</legend>
+		<table id="effect_ap">
+			<thead>
+				<tr>
+					<td>AP</td>
+					<td>
+						<label><input type="checkbox" class="checkall2" value="1 0" />全选</label>
+					</td>
+				</tr>
+			</thead>
+		</table>
+	</fieldset>
+</div>
+
+<%+footer%>

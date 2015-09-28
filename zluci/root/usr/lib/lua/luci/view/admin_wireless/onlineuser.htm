@@ -1,0 +1,88 @@
+<%+header%>
+
+<link rel="stylesheet" type="text/css" href="<%=resource%>/js/themes_easyui/default/easyui.css" media="screen"/>
+<link rel="stylesheet" type="text/css" href="<%=media%>/css/managecss.css" media="screen" />   
+<style type="text/css">ul.ul_cols{list-style-type:none;margin:0}</style>
+<script src="<%=resource%>/js/jquery.js" type="text/javascript"></script>
+<script src="<%=resource%>/js/gettheme.js" type="text/javascript"></script>
+<script src="<%=resource%>/js/jquery.easyui.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="<%=resource%>/js/jquery.ui.ext.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/jquery.ui.cmx.js"></script>
+<script src="<%=resource%>/js/jquery.ext.verify.js" type="text/javascript"></script>
+<script src="<%=resource%>/js/jquery.dataTables.js" type="text/javascript"></script>
+<script src="<%=resource%>/js/jquery.dataTables.ext.js" type="text/javascript"></script>
+<script src="<%=resource%>/js/underscore.string.js" type="text/javascript" ></script>
+<script src="<%=resource%>/js/gozila.js" type="text/javascript"></script>
+<script src="<%=resource%>/js/onlineuser.js" type="text/javascript"></script>
+
+<div class="container_12">
+	<h2 style="padding-bottom:20px;"><a id="content" name="content">无线用户</a></h2>
+	<table class="showtab display" id="tb_online_users">
+		<thead>
+			<tr>
+				<td colid="0">序号</td>
+				<td colid="1">MAC</td>
+				<td colid="2">接入频段</td>
+				<td colid="3">是否双频</td>
+				<td colid="4">IP地址</td>
+				<td colid="5">所属AP</td>
+				<td colid="6">SSID</td>
+				<td colid="7">状态</td>
+				<!--
+				<td colid="8">
+					<span style="cursor:pointer;" class="checkall">全选/反选</span>
+				</td>
+				-->
+			</tr>
+		</thead>
+	</table>
+	<div style="clear:both;"></div>
+	<!--
+	<div class="btn_function">
+		<input type="button" value="删除" class="btn delUsers"/>
+	</div>
+	-->
+</div>
+
+<div id="hide_column" style="display:none;">
+	<div class="form-horizontal">
+		<fieldset>
+			<div style="padding:10px 0 0 30%;">
+				<ul class="ul_cols">
+					<li>
+						<label><input type="checkbox" checked="checked" disabled="disabled" value="0" />序号</label>
+					</li>
+					<li>
+						<label><input type="checkbox" value="1" />MAC</label>
+					</li>
+					<li>
+						<label><input type="checkbox" value="2" />接入频段</label>
+					</li>
+					<li>
+						<label><input type="checkbox" value="3" />是否双频</label>
+					</li>
+					<li>
+						<label><input type="checkbox" value="4" />IP地址</label>
+					</li>
+					<li>
+						<label><input type="checkbox" value="5" />所属AP</label>
+					</li>
+					<li>
+						<label><input type="checkbox" value="6" />SSID</label>
+					</li>
+					<li>
+						<label><input type="checkbox" value="7" />状态</label>
+					</li>
+					<!--
+					<li>
+						<label><input type="checkbox" checked="checked" disabled="disabled" value="8" />全选/反选</label>
+					</li>
+					-->
+				</ul>
+			</div>
+		</fieldset>
+	</div>
+</div>
+
+<%+footer%>
+

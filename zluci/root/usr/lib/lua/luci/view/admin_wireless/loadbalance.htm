@@ -1,0 +1,105 @@
+<%+header%>
+
+<link rel="stylesheet" type="text/css" href="<%=resource%>/js/themes_easyui/default/easyui.css" media="screen"/>
+<link rel="stylesheet" type="text/css" href="<%=media%>/css/managecss.css" media="screen" />
+<link rel="stylesheet" type="text/css" href="<%=resource%>/js/themes_easyui/icon.css" media="screen"/>
+
+<script type="text/javascript" src="<%=resource%>/js/jquery.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/gettheme.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/jquery.ui.ext.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/jquery.ui.cmx.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/jquery.ext.verify.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/jquery.dataTables.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/jquery.dataTables.ext.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/underscore.string.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/gozila.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/loadbalance.js"></script>
+
+<div class="container_12">
+	<h2 style="padding-bottom:20px;"><a id="content" name="content">无线负载均衡</a></h2>
+	<div class="easyui-tabs">
+		<div class="load-balance" title="负载均衡">
+			<fieldset>
+				<div class="control-group clearfix">
+					<label class="control-label3" for="load_balance__load_enable">启用</label>
+					<div class="controls3" style="line-height:30px;">
+						<input type="checkbox" id="load_balance__load_enable" value="1" />
+					</div>
+				</div>
+				<div class="load_disinput">
+					<div class="control-group clearfix">
+						<label class="control-label3" for="load_balance__userbase">当用户数大于等于</label>
+						<div class="controls3">
+							<input type="text" id="load_balance__userbase" verify="num 1 30" />&nbsp;启用负载均衡
+							<span class="icon-tip pointer" title="输入数字1~30."></span>
+						</div>
+					</div>
+					<div class="control-group clearfix">
+						<label class="control-label3" for="load_balance__user_diff">用户数差值</label>
+						<div class="controls3">
+							<input type="text" id="load_balance__user_diff" verify="num 1 20" />
+							<span class="icon-tip pointer" title="输入数字1~20."></span>
+						</div>
+					</div>
+					<div class="control-group clearfix">
+						<label class="control-label3" for="load_balance__rssi_diff">信号强度差值</label>
+						<div class="controls3">
+							<input type="text" id="load_balance__rssi_diff" verify="num 5 50" />&nbsp;dBm
+							<span class="icon-tip pointer" title="输入数字5~50."></span>
+						</div>
+					</div>
+					<div class="control-group clearfix">
+						<label class="control-label3" for="load_balance__priority_5g">5G优先接入</label>
+						<div class="controls3" style="line-height:30px;">
+							<input type="checkbox" id="load_balance__priority_5g" value="1" />
+						</div>
+					</div>
+				</div>
+			</fieldset>
+		</div>
+		
+		<div class="sta-tenacious" title="防终端粘滞">
+			<fieldset>
+				<div class="control-group clearfix">
+					<label class="control-label3" for="sta_tenacious__sta_enable">启用</label>
+					<div class="controls3" style="line-height:30px;">
+						<input type="checkbox" id="sta_tenacious__sta_enable" value="1" />
+					</div>
+				</div>
+				<div class="pre_disinput">
+					<div class="control-group clearfix">
+						<label class="control-label3" for="sta_tenacious__rssi_limit">终端信号强度阈值</label>
+						<div class="controls3">
+							<input type="text" id="sta_tenacious__rssi_limit" disabled="disabled" verify="nums -110 -75" />&nbsp;dBm
+							<span class="icon-tip pointer" title="输入数字-110~-75."></span>
+						</div>
+					</div>
+					<div class="control-group clearfix">
+						<label class="control-label3" for="sta_tenacious__flow_limit">终端流量阈值</label>
+						<div class="controls3">
+							<input type="text" id="sta_tenacious__flow_limit" disabled="disabled" verify="num 0 102400" />&nbsp;kbps
+							<span class="icon-tip pointer" title="输入数字0~102400."></span>
+						</div>
+					</div>
+					<div class="control-group clearfix">
+						<label class="control-label3" for="sta_tenacious__sensitivity">灵敏度</label>
+						<div class="controls3">
+							<select id="sta_tenacious__sensitivity" disabled="disabled" style="width:210px;">
+								<option value="0">低</option>
+								<option value="1">中</option>
+								<option value="2">高</option>
+							</select>
+						</div>
+					</div>
+				</div>
+			</fieldset>
+		</div>
+	</div>
+	
+	<div class="btn_function cbi-page-actions" style="margin-top:70px;">
+		<input type="button" class="cbi-button cbi-button-apply" id="btn_submit" value="保存">
+	</div>
+</div>
+
+<%+footer%>

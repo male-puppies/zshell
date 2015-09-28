@@ -1,0 +1,121 @@
+<%+header%>
+
+<link rel="stylesheet" type="text/css" media="screen" href="<%=resource%>/css/jquery-ui.css" />
+<link rel="stylesheet" type="text/css" media="screen" href="<%=resource%>/css/jquery.dataTables.css" />
+
+<script type="text/javascript" src="<%=resource%>/js/black/jquery-ui.min.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/black/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/common.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/radiostatus.js"></script>
+
+<div class="cbi-map" id="cbi-apstatus">
+	<h2><a id="content" name="content">Radio状态</a></h2>
+	<div class="cbi-map-descr"></div>
+	
+	<fieldset class="cbi-section">
+		<table id="Radio_list">
+			<thead>
+				<tr>
+					<td colid="0">序号</td>
+					<td colid="1">无线协议</td>
+					<td colid="2">频段</td>
+					<td colid="3">工作信道</td>
+					<td colid="4">信道带宽</td>
+					<td colid="5">用户数</td>
+					<td colid="6">功率(dBm)</td>
+					<td colid="7">信道利用率</td>
+					<td colid="8">噪声(dB)</td>
+					<td colid="9">所属AP</td>
+					<td colid="11">WLAN状态</td>
+					<td colid="10">相邻WLAN</td>
+				</tr>
+			</thead>
+		</table>
+		<div class="btn_function clearfix">
+			<input type="button" value="隐藏/显示列" class="cbi-button btn_col" style="float:right" value="隐藏/显示列" />
+		</div>
+	</fieldset>
+</div>
+
+<!-- 相邻WLAN -->	
+<div class="hide" id="dialog_neighbor">
+	<fieldset>
+	  	<legend>相邻WLAN</legend>
+		<table id="neighbor_list">
+			<thead>
+				<tr>
+					<td>SSID</td>
+					<td>BSSID</td>
+					<td>信道</td>
+					<td>信号强度</td>
+				</tr>
+			</thead>
+		</table>
+	</fieldset>
+</div>
+
+<!-- WLAN状态 -->
+<div class="hide" id="dialog_wlanstate">
+	<fieldset>
+		<legend>WLAN状态</legend>
+		<table class="wlanstate" id="wlanstate_list">
+			<thead>
+				<tr>
+					<td>接口</td>
+					<td>ESSID</td>
+					<td>BSSID</td>
+					<td>速率</td>
+					<td>用户数</td>
+				</tr>
+			</thead>
+		</table>
+	</fieldset>
+</div>
+
+<!-- 隐藏datatab列 -->
+<div class="hide" id="hide_column">
+	<fieldset>
+		<div style="padding:10px 0 0 30%;">
+			<ul class="ul_cols">
+				<li>
+					<label><input type="checkbox" checked="checked" disabled="disabled" value="0" />序号</label>
+				</li>
+				<li>
+					<label><input type="checkbox" value="1" />无线协议</label>
+				</li>
+				<li>
+					<label><input type="checkbox" value="2" />频段</label>
+				</li>
+				<li>
+					<label><input type="checkbox" value="3" />工作信道</label>
+				</li>
+				<li>
+					<label><input type="checkbox" value="4" />信道带宽</label>
+				</li>
+				<li>
+					<label><input type="checkbox" value="5" />用户数</label>
+				</li>
+				<li>
+					<label><input type="checkbox" value="6" />功率(dBm)</label>
+				</li>
+				<li>
+					<label><input type="checkbox" value="7" />信道利用率</label>
+				</li>
+				<li>
+					<label><input type="checkbox" value="8" />噪声(dB)</label>
+				</li>
+				<li>
+					<label><input type="checkbox" value="9" />所属AP</label>
+				</li>
+				<li>
+					<label><input type="checkbox" value="11" />WLAN状态</label>
+				</li>
+				<li>
+					<label><input type="checkbox" value="10" />相邻WLAN</label>
+				</li>
+			</ul>
+		</div>
+	</fieldset>
+</div>
+
+<%+footer%>
