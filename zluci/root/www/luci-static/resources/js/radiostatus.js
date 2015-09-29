@@ -108,21 +108,19 @@ function createDtNeighbor() {
 				"mData": "rssi",
 				"sWidth": 180,
 				"mRender": function(d, t, f){
-					return '<span style="display:none;">'+ toSameNum(d, 4) + '</span>' + '<div class="rssi_blocks" value="'+ d +'"><div class="rssi_tip"></div></div>';
+					return '<span style="display:none;">'+ toSameNum(d, 4) + '</span>' + '<div class="rssi_blocks" value="'+ RssiConvert(d) +'" text="' + d + ' dBm"><div class="rssi_tip"></div></div>';
 				}
 			}
 		],
 		"fnDrawCallback": function() {
 			$('.rssi_blocks').each(function(index, element) {
-				var val = $(element).attr('value');
-				var rssi = RssiConvert(val);
-				$(element).progressbar({
-					"value": rssi
-				});
-				$(element).find(".rssi_tip").text(val +' dBm');
-				$(element).find('.ui-progressbar-value').css('background-color', RssiColor(rssi));
+				var val = $(element).attr('value'),
+					text = $(element).attr('text');
+
+				$(element).progressbar({"value": parseInt(val)});
+				$(element).find(".rssi_tip").text(text);
+				$(element).find('.ui-progressbar-value').css('background-color', RssiColor(val));
 			});
-			
 		}
 	});
 }
@@ -335,7 +333,6 @@ function initEvent(){
 	$('.btn_col').on('click', OnHideCol);
 }
 
-
 function OnHideCol() {
 	$("#hide_column ul li input").each(function(index, element) {
 		$(element).prop('checked', true);
@@ -363,8 +360,8 @@ function RssiColor(sRate) {
 		b = 0,
 		rate = parseInt(sRate);
 
-	b = (100 - rate) * 155 / 100 + 100;
-	r = (100 - rate) * 155 / 100 + 100;
+	b = (100 - rate) * 120 / 100 + 100;
+	r = (100 - rate) * 120 / 100 + 100;
 	g = rate * 100 / 100 + 200;
 
 	return 'rgb(' + parseInt(r) + ', ' + parseInt(g) + ', ' + parseInt(b) + ')';

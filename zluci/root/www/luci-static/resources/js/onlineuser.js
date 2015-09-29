@@ -1,87 +1,31 @@
 var oTabUsers,
-	diagHideColumn,
-	hideColumns = [],
-	isFirstFilterURL = true, //只执行一次URL过滤
-	oAPUsers;
+	isFirstFilterURL = true; //只执行一次URL过滤
 
 //页面加载初始化
 $(document).ready(function() {
-	diagHideColumn = createDialogHideColumn();
 	oTabUsers = createDtUsers();
-	$("#tb_online_users_length").append('<input class="btn btn_col" style="margin-left:20px;" type="button" value="数据显示" />');
 	initData();
 	initEvent();
 })
 
-function createDialogHideColumn() {
-	return $('#hide_column').dialog({
-		"title": '显示隐藏列',
-		"closed": true,
-		"modal": true,
-		"resizable": true,
-		"width": 400,
-		"height": 320,
-		"buttons": [{
-			text: '保存',
-			handler: function() {
-				saveHideColumn();
-			}
-		}, {
-			text: '取消',
-			handler: function() {
-				$('#hide_column').dialog('close');
-			}
-		}]
-	});
-}
-
-function saveHideColumn() {
-	var str = {};
-	var hidenum = [];
-	$('#hide_column ul.ul_cols li').each(function(index, element) {
-		if ($(element).find('input').attr("checked") != "checked") {
-			hidenum.push($(element).find('input').val());
-		}
-	});
-	str.page = 'webui/hidepage/wireless/onlineuser';
-	str.data = hidenum;
-	cgicall('RDS.DtHideColumns(%j)', str, function(d) {
-		hideColumns = hidenum;
-		$('#tb_online_users').oDtHideColumn(oTabUsers, hidenum);
-	});
-	diagHideColumn.dialog('close');
-}
 
 function createDtUsers() {
 	return $('#tb_online_users').dataTable({
 		"bAutoWidth": false,
-		"bProcessing": false,
-		"bSort": true,
-		"sPaginationType":"full_numbers",
-		"sServerMethod" : "POST",
-		"sAjaxDataProp": "",
-		"iDisplayLength": 10,
+		"aaSorting": [[1, 'desc']],
+		"sPaginationType": "full_numbers",
+		"language": {"url": '/luci-static/resources/js/black/dataTables.chinese.json'},
 		"aoColumns": [
 			{
-				"mData":"id",
-				"sWidth": 70
+				"mData": null
 			},
 			{
-				"mData": "mac",
-				"mRender": function(d, t, f) {
-					return '<div class="fontwidth_family">'+ d +'</div>';
-				}
+				"mData": "mac"
 			},
 			{
 				"mData": "band",
 				"mRender": function(d, t, f) {
 					return d.toUpperCase();
-				}
-			},
-			{
-				"mData": "dualband",
-				"mRender": function(d, t, f) {
-					return d == "1" ? "是" : "否";
 				}
 			},
 			{ 
@@ -95,7 +39,7 @@ function createDtUsers() {
 				"mRender": function(d, t, f) {
 					var data = d;
 					if (data == "default" || data == "") data = f.ap;
-					return '<a class="underline fontwidth_family" href="'+ urlFilterString +'apstatus?filter='+ f.ap +'">' + data + '</a><span style="display:none;">' + f.ap + '</span>';
+					return '<span style="display:none;">' + f.ap + '</span><a class="underline" href="apstatus?filter='+ f.ap +'">' + data + '</a>';
 				}
 			},
 			{
@@ -103,8 +47,8 @@ function createDtUsers() {
 				"sWidth": 180,
 				"mRender": function(d, t, f){
 					var rssi = parseInt(f['rssi']);
-					var str = '(' + toSameNum(rssi, 4) +'dBm) ' + d;
-					return '<span style="display:none;">'+rssi+ '</span>' + '<div class="rssi_blocks" value="'+ RssiConvert(rssi) +'" text="'+ str +'"></div>';
+					var str = '(' + toSameNum(rssi, 4) + 'dBm) ' + d;
+					return '<span style="display:none;">' + toSameNum(rssi, 4) + '</span>' + '<div class="rssi_blocks" value="' + RssiConvert(rssi) + '" text="' + str + '"><div class="rssi_tip"></div></div>';
 				}
 			},
 			{ 
@@ -119,134 +63,103 @@ function createDtUsers() {
 					return str + '</span>';
 				}
 			}
-			/*
-			{
-				"mData":null,
-				"bSortable": false,
-				"sWidth": 60,
-				"mRender": function(d, t, f){
-					return '<input type="checkbox">';
-				}
-			}
-			*/
 		],
-		"fnDrawCallback": function ( oSettings ) {   //用于生成table的序号;
-			var that = this;
-        	this.$('td:first-child', {}).each( function (i) {
-                   that.fnUpdate( i+1, this.parentNode, 0, false, false );
+		"fnDrawCallback": function() {
+			this.api().column(0).nodes().each(function(cell, i) {
+				cell.innerHTML = i + 1;
 			});
-			//rssi bar
-			$('.rssi_blocks').each(function(){
-				var rssi = $(this).attr('value');
-				var text = $(this).attr('text');
-				$(this).progressbar({"value": rssi, "text": text});
-				//fix color
-				var color = RssiColor(rssi);
-				$(this).find('.progressbar-value').css('background-color', color);
+			
+			$('.rssi_blocks').each(function(index, element) {
+				var val = $(element).attr('value'),
+					text = $(element).attr('text');
+					
+					console.log(text)
+
+				$(element).progressbar({"value": parseInt(val)});
+				$(element).find(".rssi_tip").text(text);
+				$(element).find('.ui-progressbar-value').css('background-color', RssiColor(val));
 			});
-       	},
-		//"fnRowCallback":dtBindRowSelectEvents,
-		"aaSorting": [[ 1, 'asc' ]]
+		}
 	});
 }
 
 function initData(){	
-	cgicall('RDS.ApmListUsers("")', function(d) {
-		cgicall('RDS.GetHideColumns("webui/hidepage/wireless/onlineuser")', function(dd) { //获取隐藏的列
-			cgicall('RDS.GetBandSupport("")', function(ddd) { //支持频段
-				oAPUsers = d;
-				if (!dd || dd == "false") {
-					dd = hideColumns;
-				} else {
-					hideColumns = dd;
+	cgicall('ApmListUsers', function(d) {
+		if (d.status == 0) {
+			dtReloadData(oTabUsers, dtObjToArray(d.data), true, function() {
+				var furl = getRequestFilter();
+
+				if (furl != "" && isFirstFilterURL) {
+					oTabUsers.fnFilter(furl);
+					isFirstFilterURL = false;
 				}
-				if (ddd == "2g" || ddd == "5g") {
-					$("#hide_column ul li input").each(function(index, element) {
-						if ($(element).attr("value") == "3") {
-							$(element).parents("li").css("display", "none");
-						}
-					})
-					var j = true;
-					for (var i in dd) {
-						if (dd[i] == "3") {
-							j = false;
-							break;
-						}
-					}
-					if (j == true) dd.push("3");
-				} else {
-					$("#hide_column ul li").css("display", "block");
-				}
-				//过滤刷新
-				dtReloadData(oTabUsers, ObjectToArray(d), true, function() {
-					if ($('.dataTables_filter input').val() != '') {
-						oTabUsers.fnFilter($('.dataTables_filter input').val());
-					} else {
-						if (isFirstFilterURL) {
-							oTabUsers.fnFilter(GetRequestFilter());
-							isFirstFilterURL = false;
-						}
-					}
-				});
-				$('#tb_online_users').oDtHideColumn(oTabUsers, dd);
-				
-				setTimeout(function(){
-					initData();
-				}, 5000);
 			});
-		});
+			
+			setTimeout(function(){
+				initData();
+			}, 5000);
+		} else {
+			console.log("ApmListUsers error " + (d.data ? d.data : ""));
+		}
 	});
 }
 
-/*
-function DoDelApUsers(){
-	var aUsrs = dtGetSelected(oTabUsers);
-	if (aUsrs.length == 0) {
-		alert('选择要删除的行！')
-		return;
+function getRequestFilter() {
+	var str,
+		restr = "",
+		obj = {},
+		url = window.location.search;
+		
+	if (url && url != "") {
+		url = url.substring(1);
+		str = url.split("&");
+		
+		for (var i = 0; i < str.length; i ++) {
+			obj[str[i].split("=")[0]] = str[i].split("=")[1];
+		}
+		
+		if ("filter" in obj) {
+			restr = obj.filter.split("||").join(" ");
+		}
 	}
-	var aUIDs = [];
-	for (var i = aUsrs.length - 1; i >= 0; i--) {
-		aUIDs.push({"ap": aUsrs[i].ap, "mac": aUsrs[i].mac, "band": aUsrs[i].band});
-	};
-	cgicall('RDS.ApmDelUsers(%j)', aUIDs, function(d){
-		initData();
-	});		
+	return decodeURI(restr);
 }
 
-function OnSelectAll(){
-	dtSelectAll(oTabUsers);
+function initEvent(){
+	$('.btn_col').on('click', OnHideCol);
 }
-*/
 
 function OnHideCol() {
 	$("#hide_column ul li input").each(function(index, element) {
-		$(element).attr('checked', true);
-		for (var i=0; i<hideColumns.length; i++) {
+		$(element).prop('checked', true);
+		for (var i = 0; i < hideColumns.length; i++) {
 			if (hideColumns[i] == $(element).val()) {
-				$(element).attr('checked', false);
+				$(element).prop('checked', false);
 				break;
 			}
 		}
 	})
-	diagHideColumn.dialog('open');
+	$("#hide_column").dialog('open');
 }
 
-function toSameNum(d, n) {
-	var num,
-		str = d.toString(),
-		len = str.length;
-	if (len < n) {
-		num = parseInt(n) - len;
-		for (var i = 0; i < num; i++) {
-			str = ' ' + str;
-		}
-	}
-	return str;
+function RssiConvert(d) {
+	var num = parseInt(d);
+	var per = Math.round((100*num + 11000)/75); //-30信号强度为100%,-110为0%
+	if (per < 0) per = 0;
+	if (per > 100) per = 100;
+	return per;
 }
 
-function initEvent(){
-	//$('.delUsers').on('click', DoDelApUsers);
-	//$('.checkall').on('click', OnSelectAll);
-	$('.btn_col').live('click', OnHideCol);
+function RssiColor(sRate) {
+	var r = 0,
+		g = 0,
+		b = 0,
+		rate = parseInt(sRate);
+
+	b = (100 - rate) * 120 / 100 + 100;
+	r = (100 - rate) * 120 / 100 + 100;
+	g = rate * 100 / 100 + 200;
+
+	return 'rgb(' + parseInt(r) + ', ' + parseInt(g) + ', ' + parseInt(b) + ')';
 }
+

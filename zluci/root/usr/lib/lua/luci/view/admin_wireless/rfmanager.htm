@@ -1,0 +1,212 @@
+<%+header%>
+
+<link rel="stylesheet" type="text/css" media="screen" href="<%=resource%>/css/jquery-ui.css" />
+<link rel="stylesheet" type="text/css" media="screen" href="<%=resource%>/css/jquery.dataTables.css" />
+
+<script type="text/javascript" src="<%=resource%>/js/black/jquery-ui.min.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/black/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/common.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/rfmanager.js"></script>
+
+<div class="cbi-map" id="cbi-apstatus">
+	<h2><a id="content" name="content">射频资源管理</a></h2>
+	<div class="cbi-map-descr"></div>
+	
+	<fieldset class="cbi-section">
+		<div id="tabs">
+			<ul>
+				<li><a href="#tabs_power">功率调整</a></li>
+				<li><a href="#tabs_channel">信道调整</a></li>
+			</ul>
+			
+			<div id="tabs_power">
+				<fieldset class="field-d">
+					<div class="cbi-value clearfix">
+						<label class="cbi-value-title" for="power__enable">启用</label>
+						<div class="cbi-value-field">
+							<input type="checkbox" id="power__enable" value="1 0" />
+						</div>
+					</div>
+					<div class="cbi-value clearfix">
+						<label class="cbi-value-title">调整周期</label>
+						<div class="cbi-value-field">
+							<input type="text" id="power__cycle" verify="num 1 60" />&nbsp;min
+							<span class="icon-tip" title="输入数字1~60."></span>
+						</div>
+					</div>
+					<div class="cbi-value clearfix">
+						<label class="cbi-value-title">执行时间段</label>
+						<div class="cbi-value-field">
+							<input style="width:100px;" type="text" id="power__time_start" verify="notspace" />&nbsp;至&nbsp;&nbsp;<input style="width:100px; type="text" id="power__time_end" verify="notspace" />
+						</div>
+					</div>
+					<div class="cbi-value clearfix">
+						<label class="cbi-value-title" for="power__users_enable">有用户不调整</label>
+						<div class="cbi-value-field">
+							<input type="checkbox" id="power__users_enable" value="1 0" />
+						</div>
+					</div>
+					<div class="cbi-value clearfix" style="margin-top:12px;">
+						<label class="cbi-value-title" for="power__adjust_2g__enable">2G调整</label>
+						<div class="cbi-value-field">
+							<input type="checkbox" id="power__adjust_2g__enable" class="p_2g" value="1 0" />
+						</div>
+					</div>
+					<div class="p_2g">
+						<div class="cbi-value clearfix">
+							<label class="cbi-value-title">邻居AP信号强度阈值</label>
+							<div class="cbi-value-field">
+								<input type="text" id="power__adjust_2g__rssi_limit" disabled="disabled" verify="nums -110 -30" />&nbsp;dBm
+								<span class="icon-tip pointer" title="输入数字-110~-30."></span>
+							</div>
+						</div>
+						<div class="cbi-value clearfix">
+							<label class="cbi-value-title">邻居AP个数</label>
+							<div class="cbi-value-field">
+								<input type="text" id="power__adjust_2g__nap_num" disabled="disabled" verify="num 0 10" />
+								<span class="icon-tip pointer" title="输入数字0~10."></span>
+							</div>
+						</div>
+						<div class="cbi-value clearfix">
+							<label class="cbi-value-title">最优信号强度</label>
+							<div class="cbi-value-field">
+								<input type="text" id="power__adjust_2g__best_rssi" disabled="disabled" verify="nums -110 -30" />&nbsp;dBm
+								<span class="icon-tip pointer" title="输入数字-110~-30."></span>
+							</div>
+						</div>
+					</div>
+					<div class="cbi-value clearfix" style="margin-top:12px;">
+						<label class="cbi-value-title" for="power__adjust_5g__enable">5G调整</label>
+						<div class="cbi-value-field">
+							<input type="checkbox" id="power__adjust_5g__enable" class="p_5g" value="1 0" />
+						</div>
+					</div>
+					<div class="p_5g">
+						<div class="cbi-value clearfix">
+							<label class="cbi-value-title">邻居AP信号强度阈值</label>
+							<div class="cbi-value-field">
+								<input type="text" id="power__adjust_5g__rssi_limit" disabled="disabled" verify="nums -110 -30" />&nbsp;dBm
+								<span class="icon-tip pointer" title="输入数字-110~-30."></span>
+							</div>
+						</div>
+						<div class="cbi-value clearfix">
+							<label class="cbi-value-title">邻居AP个数</label>
+							<div class="cbi-value-field">
+								<input type="text" id="power__adjust_5g__nap_num" disabled="disabled" verify="num 0 10" />
+								<span class="icon-tip pointer" title="输入数字0~10."></span>
+							</div>
+						</div>
+						<div class="cbi-value clearfix">
+							<label class="cbi-value-title">最优信号强度</label>
+							<div class="cbi-value-field">
+								<input type="text" id="power__adjust_5g__best_rssi" disabled="disabled" verify="nums -110 -30" />&nbsp;dBm
+								<span class="icon-tip pointer" title="输入数字-110~-30."></span>
+							</div>
+						</div>
+					</div>
+		
+		
+				</fieldset>
+				<div class="btn_function cbi-page-actions" style="margin-top:70px;">
+					<input type="button" id="power_effect" class="cbi-button cbi-button-apply" value="功率立即调整" />
+					<input type="button" id="power_submit" class="cbi-button cbi-button-apply" value="保存自动调整" />
+				</div>
+			</div>
+		
+			<div id="tabs_channel">
+				<fieldset class="field-d">
+					<div class="cbi-value clearfix">
+						<label class="cbi-value-title" for="channel__enable">启用</label>
+						<div class="cbi-value-field">
+							<input type="checkbox" id="channel__enable" value="1 0" />
+						</div>
+					</div>
+					<div class="cbi-value clearfix">
+						<label class="cbi-value-title">调整周期</label>
+						<div class="cbi-value-field">
+							<input type="text" id="channel__cycle" verify="num 1 60" />&nbsp;min
+							<span class="icon-tip pointer" title="输入数字1~60."></span>
+						</div>
+					</div>
+					<div class="cbi-value clearfix">
+						<label class="cbi-value-title">执行时间段</label>
+						<div class="cbi-value-field">
+							<input style="width:100px;" type="text" id="channel__time_start" />&nbsp;至&nbsp;&nbsp;<input style="width:100px;" type="text" id="channel__time_end" />
+						</div>
+					</div>
+					<div class="cbi-value clearfix">
+						<label class="cbi-value-title" for="channel__users_enable">有用户不调整</label>
+						<div class="cbi-value-field">
+							<input type="checkbox" id="channel__users_enable" value="1 0" />
+						</div>
+					</div>
+					<div class="cbi-value clearfix" style="margin-top:12px;">
+						<label class="cbi-value-title" for="channel__adjust_2g__enable">2G调整</label>
+						<div class="cbi-value-field">
+							<input type="checkbox" id="channel__adjust_2g__enable" class="c_2g" value="1 0" />
+						</div>
+					</div>
+					<div class="c_2g">
+						<div class="cbi-value clearfix">
+							<label class="cbi-value-title">信道利用率阈值</label>
+							<div class="cbi-value-field">
+								<input type="text" id="channel__adjust_2g__channel_use" disabled="disabled" verify="num 30 100" />&nbsp;%
+								<span class="icon-tip pointer" title="输入数字30~100."></span>
+							</div>
+						</div>
+						<div class="cbi-value clearfix">
+							<label class="cbi-value-title">干扰时间比</label>
+							<div class="cbi-value-field">
+								<input type="text" id="channel__adjust_2g__percent" disabled="disabled" verify="num 0 100" />&nbsp;%
+								<span class="icon-tip pointer" title="输入数字0~100."></span>
+							</div>
+						</div>
+					</div>
+					<div class="cbi-value clearfix" style="margin-top:12px;">
+						<label class="cbi-value-title" for="channel__adjust_5g__enable">5G调整</label>
+						<div class="cbi-value-field">
+							<input type="checkbox" id="channel__adjust_5g__enable" class="c_5g" value="1 0" />
+						</div>
+					</div>
+					<div class="c_5g">
+						<div class="cbi-value clearfix">
+							<label class="cbi-value-title">信道利用率阈值</label>
+							<div class="cbi-value-field">
+								<input type="text" id="channel__adjust_5g__channel_use" disabled="disabled" verify="num 30 100" />&nbsp;%
+								<span class="icon-tip pointer" title="输入数字30~100."></span>
+							</div>
+						</div>
+						<div class="cbi-value clearfix">
+							<label class="cbi-value-title">干扰时间比</label>
+							<div class="cbi-value-field">
+								<input type="text" id="channel__adjust_5g__percent" disabled="disabled" verify="num 0 100" />&nbsp;%
+								<span class="icon-tip pointer" title="输入数字0~100."></span>
+							</div>
+						</div>
+					</div>
+				</fieldset>
+				<div class="btn_function cbi-page-actions" style="margin-top:70px;">
+					<input type="button" id="channel_effect" class="cbi-button cbi-button-apply" value="信道立即调整" />
+					<input type="button" id="channel_submit" class="cbi-button cbi-button-apply" value="保存自动调整" />
+				</div>
+			</div>
+		</div>
+	</fieldset>
+</div>
+
+<div id="adjust_aps">
+	<fieldset>
+		<table id="ap_list">
+			<thead>
+				<tr>
+					<td>AP</td>
+					<td>
+						<span style="cursor: pointer;" class="checkall">全选/反选</span>
+					</td>
+				</tr>
+			</thead>
+		</table>
+	</fieldset>
+</div>
+
+<%+footer%>

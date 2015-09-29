@@ -1363,8 +1363,11 @@ body .ui-tooltip { border-width:2px; }
   border: none;
  }
  .ui-progressbar .rssi_tip {
+	 width: 100%;
 	 position: absolute;
-	 left: 40%;
+	 top: 0;
+	 left: 0;
+	 text-align: center;
  }
 
 

@@ -1,24 +1,21 @@
 var dataCon,
+	oTableApList,
 	cloneData = {},
-	diagAdjustAps,
 	power_channel;
 
 //页面加载初始化
 $(document).ready(function() {
-	diagAdjustAps = createDiagAdjustAps();
 	oTableApList = createDtApList();
+	initCreateDialog()
 	initData();
 	initEvent();
 });
 
 function createDtApList() {
 	return $('#ap_list').dataTable({
-		"bProcessing": false,
-		"sServerMethod": "POST",
-		"sAjaxDataProp": "",
+		"bAutoWidth": false,
 		"sPaginationType": "full_numbers",
-		"bSort": true,
-		"iDisplayLength": 10,
+		"language": {"url": '/luci-static/resources/js/black/dataTables.chinese.json'},
 		"aoColumns": [
 			{
 				"mData": "Name"
@@ -27,7 +24,7 @@ function createDtApList() {
 				"mData": null,
 				"bSortable": false,
 				"mRender": function() {
-					return '<input type="checkbox">';
+					return '<input type="checkbox" value="1 0">';
 				}
 			}
 		],
@@ -35,7 +32,7 @@ function createDtApList() {
 	})
 }
 
-function createDiagAdjustAps() {
+function initCreateDialog() {
 	return $('#adjust_aps').dialog({
 		"title":'选择立即调整AP',
 		"closed": true,
@@ -268,6 +265,8 @@ function initEvent() {
 	$('#power_submit,#channel_submit').on('click', function(){
 		saveSubmit($(this).attr('id'));
 	})
+	
+	$("#tabs").tabs().tooltip();
 }
 
 function cloneObj(myObj) { 
