@@ -147,7 +147,7 @@ function createDtNaps() {
 		"language": {
 			"url": '/luci-static/resources/js/black/dataTables.chinese.json'
 		},
-		"aaSorting": [[3, 'asc']],
+		"aaSorting": [[3, 'desc']],
 		"aoColumns": [
 			{
 				"mData": "apid",
@@ -207,31 +207,30 @@ function createDtNaps() {
 					if (g2 && !g5) {
 						str2 = '2G (' + g2['rssi'] + 'dBm)';
 						
-						return '<span style="display:none;">' + g2['rssi'] + '</span>' + '<div class="rssi_blocks" value="' + RssiConvert(g2['rssi']) + '" text="' + str2 + '"></div>';
+						return '<span style="display:none;">' + g2['rssi'] + '</span>' + '<div class="rssi_blocks" value="' + RssiConvert(g2['rssi']) + '" text="' + str2 + '"><div class="rssi_tip"></div></div>';
 					}
 					if (!g2 && g5) {
 						str5 = '5G (' + g5['rssi'] + 'dBm)';
 						
-						return '<span style="display:none;">' + g5['rssi'] + '</span>' + '<div class="rssi_blocks" value="' + RssiConvert(g5['rssi']) + '" text="' + str5 + '"></div>';
+						return '<span style="display:none;">' + g5['rssi'] + '</span>' + '<div class="rssi_blocks" value="' + RssiConvert(g5['rssi']) + '" text="' + str5 + '"><div class="rssi_tip"></div></div>';
 					}
 					if (g2 && g5) {
 						str2 = '2G (' + g2['rssi'] + 'dBm)';
 						str5 = '5G (' + g5['rssi'] + 'dBm)';
 						
-						return '<span style="display:none;">' + g2['rssi'] + '</span>' + '<div class="rssi_blocks" value="' + RssiConvert(g2['rssi']) + '" text="' + str2 + '"></div>' + '<span style="display:none;">' + g5['rssi'] + '</span>' + '<div class="margin_5g rssi_blocks" value="' + RssiConvert(g5['rssi']) + '" text="' + str5 + '"></div>';
+						return '<span style="display:none;">' + g2['rssi'] + '</span>' + '<div class="rssi_blocks" value="' + RssiConvert(g2['rssi']) + '" text="' + str2 + '"><div class="rssi_tip"></div></div>' + '<span style="display:none;">' + g5['rssi'] + '</span>' + '<div class="margin_5g rssi_blocks" value="' + RssiConvert(g5['rssi']) + '" text="' + str5 + '"><div class="rssi_tip"></div></div>';
 					}
 				}
 			}
 		],
 		"fnDrawCallback": function() {
-			$('.rssi_blocks').each(function() {
-				var rssi = $(this).attr('value');
-				var text = $(this).attr('text');
-				$(this).progressbar({
-					"value": rssi,
-					"text": text
-				});
-				$(this).find('.progressbar-value').css('background-color', RssiColor(rssi));
+			$('.rssi_blocks').each(function(index, element) {
+				var val = $(element).attr('value'),
+					text = $(element).attr('text');
+
+				$(element).progressbar({"value": parseInt(val)});
+				$(element).find(".rssi_tip").text(text);
+				$(element).find('.ui-progressbar-value').css('background-color', RssiColor(val));
 			});
 		}
 	});
@@ -1020,5 +1019,26 @@ function country_5gSet(obj) {
 		str_5g += '<option>' + ctc_5g[k] + '</option>';
 	}
 	$("#edit__radio_5g__channel_id").html(str_5g);
+}
+
+function RssiConvert(d) {
+	var num = parseInt(d);
+	var per = Math.round((100*num + 11000)/75); //-30信号强度为100%,-110为0%
+	if (per < 0) per = 0;
+	if (per > 100) per = 100;
+	return per;
+}
+
+function RssiColor(sRate) {
+	var r = 0,
+		g = 0,
+		b = 0,
+		rate = parseInt(sRate);
+
+	b = (100 - rate) * 120 / 100 + 100;
+	r = (100 - rate) * 120 / 100 + 100;
+	g = rate * 100 / 100 + 200;
+
+	return 'rgb(' + parseInt(r) + ', ' + parseInt(g) + ', ' + parseInt(b) + ')';
 }
 

@@ -72,8 +72,6 @@ function createDtUsers() {
 			$('.rssi_blocks').each(function(index, element) {
 				var val = $(element).attr('value'),
 					text = $(element).attr('text');
-					
-					console.log(text)
 
 				$(element).progressbar({"value": parseInt(val)});
 				$(element).find(".rssi_tip").text(text);

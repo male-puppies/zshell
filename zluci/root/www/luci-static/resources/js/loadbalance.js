@@ -8,50 +8,44 @@ $(document).ready(function() {
 });
 
 function initData() {
-	cgicall('RDS.GetBandSupport("")', function(band) {
-		cgicall('RDS.GetLoadBalance("")', function(d) {
-			if (band == "2g") {
-				$("#load_balance__priority_5g").closest(".control-group").css("display", "none");
-			} else {
-				$("#load_balance__priority_5g").closest(".control-group").css("display", "block");
-			}
-			cloneData = cloneObj(d);
-			dataCon = d;
-			jsonTraversal(d, jsTravSet);
-			OnDisabledChanged(d.load_balance.load_enable, '.load_disinput');
-			OnDisabledChanged(d.sta_tenacious.sta_enable, '.pre_disinput');
-		});
+	cgicall('GetLoadBalance', function(d) {
+		if (d.status == 0) {
+			var data = d.data
+			cloneData = ObjClone(data);
+			dataCon = data;
+			jsonTraversal(data, jsTravSet);
+			OnDisabledChanged(data.sta_enable);
+		} else {
+			console.log("GetLoadBalance error " + (d.data ? d.data : ""));
+		}
 	});
 }
 
 function saveSubmit() {
-	if(!verification()) return;
-	
-	jsonTraversal(dataCon, jsTravGet);
-	var obj = {};
-	obj.data = dataCon;
-	obj.oldData = cloneData;
-
-	cgicall('RDS.SaveLoadBalance(%j)', obj, function(d) {
-		d.status == '0' ? window.location.reload() : alert('保存失败！');
+	// if(!verification()) return;
+	var obj = jsonTraversal(dataCon, jsTravGet);
+	var sobj = {
+		"data": obj,
+		"oldData": cloneData
+	}
+	cgicall('SaveLoadBalance', sobj, function(d) {
+		d.status == '0' ? alert('保存成功！') : alert('保存失败！');
 	});
 }
 
 function initEvent() {
-	$('#sta_tenacious__sta_enable').on('click', function() {
-		OnDisabledChanged($(this).attr('checked') == 'checked' ? '1' : '0', '.pre_disinput');
-	});
-	$('#load_balance__load_enable').on('click', function() {
-		OnDisabledChanged($(this).attr('checked') == 'checked' ? '1' : '0', '.load_disinput');
+	$('#sta_enable').on('click', function() {
+		OnDisabledChanged($(this).is(':checked') ? '1' : '0');
 	});
 	$('#btn_submit').on('click', saveSubmit);
+	$('#cbi-apstatus').tooltip();
 }
 
-function cloneObj(myObj) { 
-	if (typeof(myObj) != 'object') return myObj; 
-	if (myObj == null) return myObj; 
-	var myNewObj = new Object(); 
-	for(var i in myObj) 
-		myNewObj[i] = cloneObj(myObj[i]); 
-	return myNewObj; 
+function OnDisabledChanged(v) {
+	if (v == '1') {
+		$('.disinput').find('input,select,textarea').prop('disabled', false);
+	} else {
+		$('.disinput').find('input,select,textarea').prop('disabled', true);
+	}
 }
+
