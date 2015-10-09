@@ -1,0 +1,31 @@
+<%+header%>
+
+<link rel="stylesheet" type="text/css" media="screen" href="<%=resource%>/css/jquery-ui.css" />
+<link rel="stylesheet" type="text/css" media="screen" href="<%=resource%>/css/jquery.dataTables.css" />
+
+<script type="text/javascript" src="<%=resource%>/js/black/jquery-ui.min.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/black/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/common.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/onlineuserlist.js"></script>
+
+<div class="cbi-map" id="cbi-onlineuserlist">
+	<h2><a id="content" name="content">在线用户</a></h2>
+	<div class="cbi-map-descr"></div>
+	
+	<fieldset class="cbi-section">
+		<table id="online_user_list">
+			<thead>
+				<tr>
+					<td>序号</td>
+					<td>用户名</td>
+					<td>IP地址</td>
+					<td>MAC地址</td>
+					<td>在线时长</td>
+					<td>操作</td>
+				</tr>
+			</thead>
+		</table>
+	</fieldset>
+</div>
+
+<%+footer%>
