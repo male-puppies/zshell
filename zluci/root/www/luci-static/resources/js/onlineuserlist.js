@@ -29,15 +29,17 @@ function createDtUser() {
             {
 				"mData": "elapse",
 				"mRender": function(d, t, f) {
-					var days = parseInt(d/(60*24));
-					var hours = parseInt(d/60 - days*24);
-					var minutes = parseInt(d%60);
+					var days = parseInt(d/(60*60*24));
+					var hours = parseInt(d/60/24 - days*24);
+					var minutes = parseInt(d/60 - hours*60 - days*24);
 					if (days > 0) {
 						return days + "d" + hours + "h" + minutes + "m";
 					} else if (hours > 0) {
 						return hours +"h" + minutes + "m";
-					} else {
+					} else if (minutes > 0) {
 						return minutes + "m";
+					} else {
+						return d + "s";
 					}
 				}
 			},
