@@ -5,6 +5,7 @@ var dataCon,
 $(document).ready(function() {
 	initData();
 	initEvent();
+	verifyEventsInit();
 });
 
 function initData() {
@@ -22,7 +23,8 @@ function initData() {
 }
 
 function saveSubmit() {
-	// if(!verification()) return;
+	if (!verification()) return;
+
 	var obj = jsonTraversal(dataCon, jsTravGet);
 	var sobj = {
 		"data": obj,

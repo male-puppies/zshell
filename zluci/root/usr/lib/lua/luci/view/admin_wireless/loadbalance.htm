@@ -4,6 +4,7 @@
 
 <script type="text/javascript" src="<%=resource%>/js/black/jquery-ui.min.js"></script>
 <script type="text/javascript" src="<%=resource%>/js/common.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/jquery.ext.verify.js"></script>
 <script type="text/javascript" src="<%=resource%>/js/loadbalance.js"></script>
 
 <div class="cbi-map" id="cbi-loadbalance">
@@ -22,7 +23,7 @@
 				<div class="cbi-value clearfix">
 					<label class="cbi-value-title" for="rssi_limit">终端信号强度阈值</label>
 					<div class="cbi-value-field">
-						<input type="text" id="rssi_limit" disabled="disabled" verify="nums -110 -75" />&nbsp;dBm
+						<input type="text" id="rssi_limit" disabled="disabled" verify="num -110 -75" />&nbsp;dBm
 						<span class="icon-tip" title="输入数字-110~-75."></span>
 					</div>
 				</div>

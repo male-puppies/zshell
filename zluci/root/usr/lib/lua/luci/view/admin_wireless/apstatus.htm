@@ -6,6 +6,7 @@
 <script type="text/javascript" src="<%=resource%>/js/black/jquery-ui.min.js"></script>
 <script type="text/javascript" src="<%=resource%>/js/black/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="<%=resource%>/js/common.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/jquery.ext.verify.js"></script>
 <script type="text/javascript" src="<%=resource%>/js/countryChannel.js"></script>
 <script type="text/javascript" src="<%=resource%>/js/apstatus.js"></script>
 
@@ -79,8 +80,8 @@
 						<div class="cbi-value clearfix">
 							<label class="cbi-value-title" for="edit__nick_name">AP描述名</label>
 							<div class="cbi-value-field">
-								<input type="text" id="edit__nick_name" verify="apname" />
-								<span class="icon-tip" title="输入字符串长度小于32个ASCII字符."></span>
+								<input type="text" id="edit__nick_name" verify="name" />
+								<span class="icon-tip" title="只能包含数字、字母、‘-’、‘.’ 和下划线。长度范围4~16。"></span>
 							</div>
 						</div>
 						<div class="cbi-value clearfix">
@@ -101,19 +102,19 @@
 						<div class="cbi-value clearfix">
 							<label class="cbi-value-title" for="edit__netmask">掩码</label>
 							<div class="cbi-value-field">
-								<input id="edit__netmask" type="text" verify="mask" />
+								<input id="edit__netmask" type="text" verify="ip" />
 							</div>
 						</div>
 						<div class="cbi-value clearfix">
 							<label class="cbi-value-title" for="edit__gateway">网关</label>
 							<div class="cbi-value-field">
-								<input id="edit__gateway" type="text" verify="gateway" />
+								<input id="edit__gateway" type="text" verify="ip" />
 							</div>
 						</div>
 						<div class="cbi-value clearfix">
 							<label class="cbi-value-title" for="edit__ac_host">控制器地址</label>
 							<div class="cbi-value-field">
-								<input id="edit__ac_host" verify="achost" type="text" />
+								<input id="edit__ac_host" verify="ip" type="text" />
 							</div>
 						</div>
 						<div class="cbi-value clearfix" style="display:none;">
@@ -145,22 +146,22 @@
 						<div class="cbi-value mode_hybrid clearfix">
 							<label class="cbi-value-title" for="edit__hybrid_scan_cycle">信道扫描周期</label>
 							<div class="cbi-value-field">
-								<input id="edit__hybrid_scan_cycle" type="text" value="30" verify="numcycle"/>&nbsp;s
-								<span class="icon-tip" title="输入数字1~300."></span>
+								<input id="edit__hybrid_scan_cycle" type="text" value="30" verify="num 1 300"/>&nbsp;s
+								<span class="icon-tip" title="输入数字1~300。"></span>
 							</div>
 						</div>
 						<div class="cbi-value mode_hybrid clearfix">
 							<label class="cbi-value-title" for="edit__hybrid_scan_time">单信道扫描时间</label>
 							<div class="cbi-value-field">
-								<input id="edit__hybrid_scan_time" type="text" value="60" verify="numtime"/>&nbsp;ms
-								<span class="icon-tip" title="输入数字10~300."></span>
+								<input id="edit__hybrid_scan_time" type="text" value="60" verify="num 10 300"/>&nbsp;ms
+								<span class="icon-tip" title="输入数字10~300。"></span>
 							</div>
 						</div>
 						<div class="cbi-value mode_monitor clearfix">
 							<label class="cbi-value-title" for="edit__monitor_scan_time">单信道扫描时间</label>
 							<div class="cbi-value-field">
-								<input id="edit__monitor_scan_time" type="text" value="200" verify="numtime"/>&nbsp;ms
-								<span class="icon-tip" title="输入数字10~300."></span>
+								<input id="edit__monitor_scan_time" type="text" value="200" verify="num 10 300"/>&nbsp;ms
+								<span class="icon-tip" title="输入数字10~300。"></span>
 							</div>
 						</div>
 						<div class="cbi-value mode_normal clearfix">
@@ -220,7 +221,7 @@
 									<label class="cbi-value-title">工作信道批量调整</label>
 									<div class="cbi-value-field">
 										<input type="checkbox" class="channel_2g_enable" />
-										<span class="icon-tip" title="批量操作时，勾选后才对工作信道下发配置生效."></span>
+										<span class="icon-tip" title="批量操作时，勾选后才对工作信道下发配置生效。"></span>
 									</div>
 								</div>
 								<div class="cbi-value clearfix">
@@ -263,8 +264,8 @@
 								<div class="cbi-value clearfix">
 									<label class="cbi-value-title" for="edit__radio_2g__users_limit">最大用户数</label>
 									<div class="cbi-value-field">
-										<input id="edit__radio_2g__users_limit" type="text" value="5" verify="num2g"/>
-										<span class="icon-tip" title="输入数字5~50."></span>
+										<input id="edit__radio_2g__users_limit" type="text" value="5" verify="num 5 50"/>
+										<span class="icon-tip" title="输入数字5~50。"></span>
 									</div>
 								</div>
 							</fieldset>
@@ -274,22 +275,22 @@
 								<div class="cbi-value clearfix">
 									<label class="cbi-value-title" for="edit__radio_2g__rts">RTS阈值</label>
 									<div class="cbi-value-field">
-										<input id="edit__radio_2g__rts" type="text" verify="rts2g"/>&nbsp;Byte
-										<span class="icon-tip" title="输入数字1~2347."></span>
+										<input id="edit__radio_2g__rts" type="text" verify="num 1 2347"/>&nbsp;Byte
+										<span class="icon-tip" title="输入数字1~2347。"></span>
 									</div>
 								</div>
 								<div class="cbi-value clearfix">
 									<label class="cbi-value-title" for="edit__radio_2g__beacon">Beacon周期</label>
 									<div class="cbi-value-field">
-										<input id="edit__radio_2g__beacon" type="text" verify="beacon2g"/>&nbsp;ms
-										<span class="icon-tip" title="输入数字50~1000."></span>
+										<input id="edit__radio_2g__beacon" type="text" verify="num 50 1000"/>&nbsp;ms
+										<span class="icon-tip" title="输入数字50~1000。"></span>
 									</div>
 								</div>
 								<div class="cbi-value clearfix">
 									<label class="cbi-value-title" for="edit__radio_2g__dtim">DTIM间隔</label>
 									<div class="cbi-value-field">
-										<input id="edit__radio_2g__dtim" type="text" verify="dtim2g"/>&nbsp;ms
-										<span class="icon-tip" title="输入数字1~100."></span>
+										<input id="edit__radio_2g__dtim" type="text" verify="num 1 100"/>&nbsp;ms
+										<span class="icon-tip" title="输入数字1~100。"></span>
 									</div>
 								</div>
 								<div class="cbi-value clearfix">
@@ -308,8 +309,8 @@
 								<div class="cbi-value clearfix">
 									<label class="cbi-value-title" for="edit__radio_2g__remax">最大重传</label>
 									<div class="cbi-value-field">
-										<input id="edit__radio_2g__remax" type="text" verify="remax2g"/>&nbsp;次
-										<span class="icon-tip" title="输入数字1~10."></span>
+										<input id="edit__radio_2g__remax" type="text" verify="num 1 10"/>&nbsp;次
+										<span class="icon-tip" title="输入数字1~10。"></span>
 									</div>
 								</div>
 								<div class="cbi-value clearfix">
@@ -360,7 +361,7 @@
 									<label class="cbi-value-title">工作信道批量调整</label>
 									<div class="cbi-value-field">
 										<input type="checkbox" class="channel_5g_enable" />
-										<span class="icon-tip" title="批量操作时，勾选后才对工作信道下发配置生效."></span>
+										<span class="icon-tip" title="批量操作时，勾选后才对工作信道下发配置生效。"></span>
 									</div>
 								</div>
 								<div class="cbi-value clearfix">
@@ -403,8 +404,8 @@
 								<div class="cbi-value clearfix">
 									<label class="cbi-value-title" for="edit__radio_5g__users_limit">最大用户数</label>
 									<div class="cbi-value-field">
-										<input id="edit__radio_5g__users_limit" type="text" value="30" verify="num5g"/>
-										<span class="icon-tip" title="输入数字5~50."></span>
+										<input id="edit__radio_5g__users_limit" type="text" value="30" verify="num 5 50"/>
+										<span class="icon-tip" title="输入数字5~50。"></span>
 									</div>
 								</div>
 							</fieldset>
@@ -414,22 +415,22 @@
 								<div class="cbi-value clearfix">
 									<label class="cbi-value-title" for="edit__radio_5g__rts">RTS阈值</label>
 									<div class="cbi-value-field">
-										<input id="edit__radio_5g__rts" type="text" verify="rts5g"/>&nbsp;Byte
-										<span class="icon-tip" title="输入数字1~2347."></span>
+										<input id="edit__radio_5g__rts" type="text" verify="num 1 2347"/>&nbsp;Byte
+										<span class="icon-tip" title="输入数字1~2347。"></span>
 									</div>
 								</div>
 								<div class="cbi-value clearfix">
 									<label class="cbi-value-title" for="edit__radio_5g__beacon">Beacon周期</label>
 									<div class="cbi-value-field">
-										<input id="edit__radio_5g__beacon" type="text" verify="beacon5g"/>&nbsp;ms
-										<span class="icon-tip" title="输入数字50~1000."></span>
+										<input id="edit__radio_5g__beacon" type="text" verify="num 50 1000"/>&nbsp;ms
+										<span class="icon-tip" title="输入数字50~1000。"></span>
 									</div>
 								</div>
 								<div class="cbi-value clearfix">
 									<label class="cbi-value-title" for="edit__radio_5g__dtim">DTIM间隔</label>
 									<div class="cbi-value-field">
-										<input id="edit__radio_5g__dtim" type="text" verify="dtim5g"/>&nbsp;ms
-										<span class="icon-tip" title="输入数字1~100."></span>
+										<input id="edit__radio_5g__dtim" type="text" verify="num 1 100"/>&nbsp;ms
+										<span class="icon-tip" title="输入数字1~100。"></span>
 									</div>
 								</div>
 								<div class="cbi-value clearfix">
@@ -448,8 +449,8 @@
 								<div class="cbi-value clearfix">
 									<label class="cbi-value-title" for="edit__radio_5g__remax">最大重传</label>
 									<div class="cbi-value-field">
-										<input id="edit__radio_5g__remax" type="text" verify="remax5g"/>&nbsp;次
-										<span class="icon-tip" title="输入数字1~10."></span>
+										<input id="edit__radio_5g__remax" type="text" verify="num 1 10"/>&nbsp;次
+										<span class="icon-tip" title="输入数字1~10。"></span>
 									</div>
 								</div>
 								<div class="cbi-value clearfix">

@@ -1666,3 +1666,27 @@ span.icon-tip {
 .btn_function {
 	margin-top: 20px;
 }
+
+.hide {
+	display: none;
+}
+
+body .invalid, .invalid {
+	border-color: #F00 !important;
+	color: #F00 !important;
+}
+
+.icon-no {
+	padding-left: 18px;
+	background: url("../../resources/cbi/reset.gif") no-repeat;
+}
+
+.icon-ok {
+	padding-left: 18px;
+	background: url("../../resources/cbi/save.gif") no-repeat;
+}
+
+.underline {
+	color: #C00;
+	text-decoration: underline;
+}

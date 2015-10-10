@@ -6,6 +6,7 @@
 <script type="text/javascript" src="<%=resource%>/js/black/jquery-ui.min.js"></script>
 <script type="text/javascript" src="<%=resource%>/js/black/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="<%=resource%>/js/common.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/jquery.ext.verify.js"></script>
 <script type="text/javascript" src="<%=resource%>/js/authpolicy.js"></script>
 
 <div class="cbi-map" id="cbi-authpolicy">
@@ -40,14 +41,15 @@
 			<div class="cbi-value clearfix">
 				<label class="cbi-value-title" for="name">认证名</label>
 				<div class="cbi-value-field">
-					<input id="name" type="text" verify=""/>
+					<input id="name" type="text" verify="name" />
+					<span class="icon-tip" title="名字只能包含数字、字母、‘-’、‘.’ 和下划线。长度范围4~16。"></span>
 				</div>
 			</div>
 			<div class="cbi-value clearfix">
 				<label class="cbi-value-title" for="iprange">IP范围</label>
 				<div class="cbi-value-field">
-					<input id="iprange" type="text" verify="" />
-					<span class="icon-tip" title="指定‘自动认证用户’自动划分到哪个组，&#10;支持单个IP地址或地址范围。例如：&#10;192.168.0.100 或者&#10;192.168.0.1-192.168.0.255"></span>
+					<input id="iprange" type="text" verify="ips" />
+					<span class="icon-tip" title="指定‘自动认证用户’自动划分到哪个组，&#10;支持单个IP地址或地址范围。例如：&#10;192.168.0.100 或者&#10;192.168.0.1-192.168.0.255。"></span>
 				</div>
 			</div>
 			<div class="cbi-value clearfix">

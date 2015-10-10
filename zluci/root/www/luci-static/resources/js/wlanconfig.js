@@ -18,6 +18,7 @@ $(document).ready(function() {
 	initCreateDialog();
 	initData();
 	initEvent();
+	verifyEventsInit();
 })
 
 function createDtWlan() {
@@ -140,12 +141,8 @@ function initCreateDialog() {
 		"buttons": [
 			{
 				"text": '保存配置',
-				"click": function(){
-					// if(!verification()){
-						// return;
-					// }
+				"click": function() {
 					submitConfig();
-					$(this).dialog('close');
 				}
 			},
 			{
@@ -296,6 +293,8 @@ function set_enable(that) {
 }
 
 function submitConfig() {
+	if (!verification()) return;
+
 	var obj = jsonTraversal(oSSID, jsTravGet);
 	var apArr = [];
 	var apChecked = oTabAps.fnGetNodes();
@@ -320,6 +319,7 @@ function submitConfig() {
 		cgicall('WLANAdd', obj, function(d) {
 			if (d.status == 0) {
 				initData();
+				$("#addConfig").dialog('close');
 			} else {
 				alert("保存失败！" + (d.data ? d.data : ""));
 			}
@@ -334,6 +334,7 @@ function submitConfig() {
 		cgicall('WLANModify', sobj, function(d) {
 			if (d.status == 0) {
 				initData();
+				$("#addConfig").dialog('close');
 			} else {
 				alert("修改失败！" + (d.data ? d.data : ""));
 			}

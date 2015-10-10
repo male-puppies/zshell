@@ -46,6 +46,7 @@ $(document).ready(function() {
 	initCreateDialog();
 	initData();
 	initEvent();
+	verifyEventsInit();
 });
 
 function createDtAPs() {
@@ -294,11 +295,7 @@ function initCreateDialog() {
 			{
 				"text": '保存',
 				"click": function() {
-					// if (!verification()) {
-						// return;
-					// }
 					saveConfAp();
-					$(this).dialog("close")
 				}
 			},
 			{
@@ -586,6 +583,8 @@ function setConfigDefault(conf) {
 
 //保存配置
 function saveConfAp() {
+	if (!verification()) return;
+
 	var macarr = [],
 		obj = {},
 		ap = checkConfigKey(nodeEdit[0]);
@@ -617,10 +616,10 @@ function saveConfAp() {
 	cgicall('ApmUpdateAps', obj, function(d) {
 		if (d.status == 0) {
 			initData();
+			$("#editAP").dialog("close");
 		} else {
 			alert("保存失败！" + (d.data ? d.data : ""));
 		}
-		$("#editAP").dialog('close');
 	});
 }
 

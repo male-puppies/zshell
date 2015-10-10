@@ -6,6 +6,7 @@
 <script type="text/javascript" src="<%=resource%>/js/black/jquery-ui.min.js"></script>
 <script type="text/javascript" src="<%=resource%>/js/black/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="<%=resource%>/js/common.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/jquery.ext.verify.js"></script>
 <script type="text/javascript" src="<%=resource%>/js/wlanconfig.js"></script>
 
 <div class="cbi-map" id="cbi-wlanconfig">
@@ -68,7 +69,7 @@
 				<label class="cbi-value-title">SSID</label>
 				<div class="cbi-value-field">
 					<input type="text" id="SSID" class="ssid" verify="ssid"/>
-					<span class="icon-tip" title="输入字符串长度小于32个字符,不超过十个中文."></span>
+					<span class="icon-tip" title="输入字符串长度小于32个字符,不超过十个中文。"></span>
 				</div>
 			</div>
 			<div class="cbi-value clearfix">
@@ -85,7 +86,7 @@
 				<label class="cbi-value-title">无线密码</label>
 				<div class="cbi-value-field">
 					<input type="text" id="password" maxlength="32" class="password" verify="wpassword"/>
-					<span class="icon-tip" title="输入数字/字母, 长度: 8~32个字符."></span>
+					<span class="icon-tip" title="输入数字/字母, 长度: 8~32个字符。"></span>
 				</div>
 			</div>
 			<div class="cbi-value clearfix">

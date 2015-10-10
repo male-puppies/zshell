@@ -12,6 +12,7 @@ $(document).ready(function() {
 	createDialog();
 	initData();
 	initEvent();
+	verifyEventsInit();
 });
 
 function createDtAuth() {
@@ -102,7 +103,6 @@ function createDialog() {
 				"text": "确定",
 				"click": function() {
 					setData();
-					$(this).dialog("close");
 				}
 			},
 			{
@@ -192,9 +192,7 @@ function delopt(name){
 }
 
 function setData(){
-	// if (verification() == false) {
-		// return;
-	// };
+	if (!verification()) return;
 	
 	var data = jsonTraversal(g_auth, jsTravGet);
 	var iprange = $('#iprange').val().split('-');
@@ -214,6 +212,7 @@ function setData(){
 		cgicall("PolicyAdd", data, function(d) {
 			if (d.status == 0) {
 				initData();
+				$("#add_policy").dialog("close");
 			} else {
 				alert("添加失败！" + (d.msg ? d.msg : ""));
 			}
@@ -223,6 +222,7 @@ function setData(){
 		cgicall("PolicySet", data, function(d) {
 			if (d.status == 0) {
 				initData();
+				$("#add_policy").dialog("close");
 			} else {
 				alert("修改失败！" + (d.msg ? d.msg : ""));
 			}

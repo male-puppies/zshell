@@ -23,8 +23,7 @@ $(document).ready(function(){
 	
 	initData();
 	initEvent();
-	
-	// verifyEventsInit();                                   	
+	verifyEventsInit()                                 	
 });
 
 function createDtUser() {
@@ -117,7 +116,6 @@ function initCreateDialog() {
 				"text": "确定",
 				"click": function() {
 					setData();
-					$(this).dialog("close");
 				}
 			},
 			{
@@ -141,7 +139,9 @@ function initData() {
 }
 
 //提交用户数据
-function setData(){
+function setData() {
+	if (!verification()) return;
+
 	var data = jsonTraversal(g_user, jsTravGet);
 	var remain_t1 = $("#remain_t1").val(),
 		remain_t2 = $("#remain_t2").val(),
@@ -176,6 +176,7 @@ function setData(){
 		cgicall("UserAdd", data, function(d) {
 			if (d.status == 0) {
 				initData();
+				$("#adduser_manage").dialog("close");
 			} else {
 				alert("添加失败！" + (d.msg ? d.msg : ""));
 			}
@@ -184,12 +185,12 @@ function setData(){
 		cgicall("UserSet", data, function(d) {
 			if (d.status == 0) {
 				initData();
+				$("#adduser_manage").dialog("close");
 			} else {
 				alert("修改失败！" + (d.msg ? d.msg : ""));
 			}
 		})
 	}
-	$('#adduser_manage').dialog('close');	
 }
 
 function edit(that){

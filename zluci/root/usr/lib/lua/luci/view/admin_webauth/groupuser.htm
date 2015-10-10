@@ -8,11 +8,12 @@
 <script type="text/javascript" src="<%=resource%>/js/black/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="<%=resource%>/js/black/jquery.datetimepicker.js"></script>
 <script type="text/javascript" src="<%=resource%>/js/common.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/jquery.ext.verify.js"></script>
 <script type="text/javascript" src="<%=resource%>/js/groupuser.js"></script>
 
 
 <div class="cbi-map" id="cbi-groupuser">
-	<h2><a id="content" name="content">AP管理</a></h2>
+	<h2><a id="content" name="content">用户管理</a></h2>
 	<div class="cbi-map-descr"></div>
 	
 	<fieldset class="cbi-section">
@@ -44,14 +45,14 @@
 			<div class="cbi-value clearfix">
 				<label class="cbi-value-title" for="enable">启用</label>
 				<div class="cbi-value-field">
-					<input type="checkbox" checked="checked" id="enable" verify="" value="1 0" />
+					<input type="checkbox" checked="checked" id="enable" value="1 0" />
 				</div>
 			</div>
 			<div class="cbi-value clearfix">
 				<label class="cbi-value-title" for="name">账号</label>
 				<div class="cbi-value-field">
 					<input class="empty" type="text" id="name" verify="name" />
-					<span class="icon-tip" title="只能包含数字 下划线 字母（大小写）和中文，且长度范围12~15个字符,不能以下划线开头或结尾！"></span>
+					<span class="icon-tip" title="只能包含数字、字母、‘-’、‘.’ 和下划线。长度范围4~16。"></span>
 				</div>
 			</div>
 			<div class="cbi-value clearfix">
@@ -64,6 +65,7 @@
 				<label class="cbi-value-title" for="pwd">密码</label>
 				<div class="cbi-value-field">
 					<input class="empty" type="password" id="pwd" verify="pwd" />
+					<span class="icon-tip" title="只能包含数字、字母和下划线。长度范围4~16。"></span>
 				</div>
 			</div>
 		</fieldset>
@@ -73,26 +75,26 @@
 			<div class="cbi-value clearfix">
 				<label class="cbi-value-title" for="bind">仅限以下MAC使用</label>
 				<div class="cbi-value-field">
-					<input type="checkbox" id="bind" verify="" value="mac none" />
+					<input type="checkbox" id="bind" value="mac none" />
 				</div>
 				<div class="cbi-value-field">
-					<textarea class="empty" disabled="disabled" id="maclist" verify="ip_mac"></textarea>
+					<textarea class="empty" disabled="disabled" id="maclist" verify="macs"></textarea>
 					<span class="icon-tip" title="输入MAC，每行一个，例如：&#10;00:11:22:33:44:55"></span>
 				</div>
 			</div>
 			<div class="cbi-value clearfix">
 				<label class="cbi-value-title" for="multi">允许多用户使用</label>
 				<div class="cbi-value-field">
-					<input type="checkbox" id="multi" verify="" value="1 0" />
+					<input type="checkbox" id="multi" value="1 0" />
 				</div>
 			</div>
 			<div class="cbi-value clearfix">
-				<label class="cbi-value-title" for="expire">在此后过期</label>
+				<label class="cbi-value-title" for="expire">过期时间</label>
 				<div class="cbi-value-field">
 					<input type="checkbox" id="expire" value="1 0" />
 				</div>
 				<div class="cbi-value-field">
-					<input class="empty" type="text" disabled="disabled" readonly="readonly" id="expire_text" />
+					<input class="empty" type="text" disabled="disabled" readonly="readonly" id="expire_text" verify="notspace" />
 				</div>
 			</div>
 			<div class="cbi-value clearfix">
