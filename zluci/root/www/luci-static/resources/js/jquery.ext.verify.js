@@ -60,7 +60,7 @@
 		},
 		"num": {
 			method: function(val, from, to){
-				var reg = /^-?[1-9]\d*$/;
+				var reg = /^-?[0-9]\d*$/;
 				if (!reg.test(val)) return false;
 				if (from && to) return (parseInt(val) >= parseInt(from) && parseInt(val) <= parseInt(to));
 				return true;
