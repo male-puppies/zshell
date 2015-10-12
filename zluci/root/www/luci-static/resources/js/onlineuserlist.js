@@ -30,7 +30,7 @@ function createDtUser() {
 				"mData": "elapse",
 				"mRender": function(d, t, f) {
 					var days = parseInt(d/(60*60*24));
-					var hours = parseInt(d/60/24 - days*24);
+					var hours = parseInt(d/60/60 - days*24);
 					var minutes = parseInt(d/60 - hours*60 - days*24);
 					if (days > 0) {
 						return days + "d" + hours + "h" + minutes + "m";
