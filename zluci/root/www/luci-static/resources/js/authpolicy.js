@@ -260,6 +260,6 @@ function initEvent() {
 function OnAddAuth() {
 	modify_flag = 0;
 	$('#name').prop("disabled", false);
-	$('#iprange').prop("disabled", false);
+	$('#iprange,input:radio[name="type"]').prop("disabled", false);
 	$('#add_policy').dialog('open');
 }
