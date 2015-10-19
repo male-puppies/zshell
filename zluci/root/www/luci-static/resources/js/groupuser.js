@@ -67,7 +67,7 @@ function createDtUser() {
 			{
 				"mData": "expire",
 				"mRender": function (d, t, f) {
-			  		if (d[0] == 0) {
+			  		if (typeof d != "undefined" && d[0] == 0) {
 			  			return "永久有效"
 			  		} else {
 						var data = d[1];
@@ -143,9 +143,9 @@ function setData() {
 	if (!verification()) return;
 
 	var data = jsonTraversal(g_user, jsTravGet);
-	var remain_t1 = $("#remain_t1").val(),
-		remain_t2 = $("#remain_t2").val(),
-		remain_t3 = $("#remain_t3").val(),
+	var remain_t1 = $("#remain_t1").val() ? $("#remain_t1").val() : 0,
+		remain_t2 = $("#remain_t2").val() ? $("#remain_t2").val() : 0,
+		remain_t3 = $("#remain_t3").val() ? $("#remain_t3").val() : 0,
 		macval = $("#maclist").val(),
 		num = 0;
 
@@ -154,7 +154,6 @@ function setData() {
 	} else {
 		data.expire = [0, $("#expire_text").val().replace(/\//g, "").replace(/\:/g, "")];
 	}
-	
 	num = remain_t1*86400 + remain_t2*3600 + remain_t3*60;
 	if (data.remain == "1") {
 		data.remain = [1, num];

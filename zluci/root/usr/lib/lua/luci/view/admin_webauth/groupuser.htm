@@ -52,7 +52,7 @@
 				<label class="cbi-value-title" for="name">账号</label>
 				<div class="cbi-value-field">
 					<input class="empty" type="text" id="name" verify="name" />
-					<span class="icon-tip" title="只能包含数字、字母、‘-’、‘.’ 和下划线。长度范围4~16。"></span>
+					<span class="icon-tip" title="只能包含中文、数字、字母、‘-’、‘.’ 和下划线，不允许空格。长度范围4~16。"></span>
 				</div>
 			</div>
 			<div class="cbi-value clearfix">
@@ -79,7 +79,7 @@
 				</div>
 				<div class="cbi-value-field">
 					<textarea class="empty" disabled="disabled" id="maclist" verify="macs"></textarea>
-					<span class="icon-tip" title="输入MAC，每行一个，例如：&#10;00:11:22:33:44:55"></span>
+					<span class="icon-tip" title="输入MAC，每行一个，不允许多余空格和回车，例如：&#10;00:11:22:33:44:55"></span>
 				</div>
 			</div>
 			<div class="cbi-value clearfix">
@@ -103,9 +103,9 @@
 					<input type="checkbox" id="remain" verify="" value="1 0" />
 				</div>
 				<div class="cbi-value-field">
-					<input type="text" id="remain_t1" class="empty" style="width:59px;" disabled="disabled" />天
-					<input type="text" id="remain_t2" class="empty" style="width:59px;" disabled="disabled" />时
-					<input type="text" id="remain_t3" class="empty" style="width:59px;" disabled="disabled" />分
+					<input type="text" id="remain_t1" class="empty" style="width:59px;" disabled="disabled" verify="num" />天
+					<input type="text" id="remain_t2" class="empty" style="width:59px;" disabled="disabled" verify="num 0 23" />时
+					<input type="text" id="remain_t3" class="empty" style="width:59px;" disabled="disabled" verify="num 0 59" />分
 				</div>
 			</div>
 		</fieldset>
