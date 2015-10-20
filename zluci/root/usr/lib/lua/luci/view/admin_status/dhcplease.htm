@@ -1,0 +1,29 @@
+<%+header%>
+
+<link rel="stylesheet" type="text/css" media="screen" href="<%=resource%>/css/jquery-ui.css" />
+<link rel="stylesheet" type="text/css" media="screen" href="<%=resource%>/css/jquery.dataTables.css" />
+
+<script type="text/javascript" src="<%=resource%>/js/black/jquery-ui.min.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/black/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/common.js"></script>
+<script type="text/javascript" src="<%=resource%>/js/dhcplease.js"></script>
+
+<div class="cbi-map" id="cbi-dhcplease">
+	<h2><a id="content" name="content">DHCP租约列表</a></h2>
+	<div class="cbi-map-descr"></div>
+	
+	<fieldset class="cbi-section">
+		<table id="dhcp_leases">
+			<thead>
+				<tr>
+					<td>主机名</td>
+					<td>IPv4地址</td>
+					<td>MAC地址</td>
+					<td>租约剩余时间</td>
+				</tr>
+			</thead>
+		</table>
+	</fieldset>
+</div>
+
+<%+footer%>
