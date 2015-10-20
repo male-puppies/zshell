@@ -16,7 +16,7 @@ function setTimeInitData() {
 function initDataTable() {
 	oTable = $('#dhcp_leases').dataTable({
 		"bAutoWidth": false,
-		"aaSorting": [[1, 'desc']],
+		"aaSorting": [[1, 'asc']],
 		"sPaginationType": "full_numbers",
 		"language": {"url": '/luci-static/resources/js/black/dataTables.chinese.json'},
 		"aoColumns": [
