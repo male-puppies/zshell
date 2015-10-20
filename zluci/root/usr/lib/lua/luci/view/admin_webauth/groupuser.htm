@@ -52,20 +52,21 @@
 				<label class="cbi-value-title" for="name">账号</label>
 				<div class="cbi-value-field">
 					<input class="empty" type="text" id="name" verify="name" />
-					<span class="icon-tip" title="只能包含中文、数字、字母、‘-’、‘.’ 和下划线，不允许空格。长度范围4~16。"></span>
+					<span class="icon-tip" title="只能包含中文、数字、字母、‘-’、‘.’ 和下划线，不允许空格。长度范围4~32个字符，不超过10个中文。"></span>
 				</div>
 			</div>
 			<div class="cbi-value clearfix">
 				<label class="cbi-value-title" for="desc">描述</label>
 				<div class="cbi-value-field">
-					<input class="empty" type="text" id="desc" />
+					<input class="empty" type="text" id="desc" verify="desc" />
+					<span class="icon-tip" title="输入字符串长度小于32个字符，不超过十个中文。"></span>
 				</div>
 			</div>
 			<div class="cbi-value clearfix">
 				<label class="cbi-value-title" for="pwd">密码</label>
 				<div class="cbi-value-field">
 					<input class="empty" type="password" id="pwd" verify="pwd" />
-					<span class="icon-tip" title="只能包含数字、字母和下划线。长度范围4~16。"></span>
+					<span class="icon-tip" title="只能包含数字、字母和下划线。长度范围4~32个字符。"></span>
 				</div>
 			</div>
 		</fieldset>

@@ -74,17 +74,33 @@
 		},
 		"name": {
 			method: function(val) {
-				var reg = /^[a-zA-Z0-9-_.\u4e00-\u9fa5]{4,16}$/;
-				return (reg.test(val)) ? true : false;
+				var len = 0;
+				for (var i=0; i<val.length; i++) {
+					var c = val.charCodeAt(i);
+					//单字节加1
+					if ((c >= 0x0001 && c <= 0x007e) || (0xff60 <= c && c <= 0xff9f)) {
+						len++;
+					}
+					else {
+						len += 3;
+					}
+				}
+				var reg = /^[a-zA-Z0-9- _.\u4e00-\u9fa5]{4,32}$/;
+				var mark = (reg.test(val)) ? true : false;
+				if (len <= 32 && mark) {
+					return true;
+				} else {
+					return false;
+				}
 			},
-			message:"非法格式。只能包含中文、数字、字母、‘-’、‘.’ 和下划线，不允许空格。长度范围4~16。"				
+			message:"非法格式。只能包含中文、数字、字母、‘-’、‘.’ 和下划线，不允许空格。长度范围4~32个字符，不超过10个中文。"				
 		},
 		"pwd": {
 			method: function(val){
-				var re = /^[0-9a-zA-Z_]{4,16}$/i;
+				var re = /^[0-9a-zA-Z_]{4,32}$/i;
 				return val.match(re)!=null;
 			},
-			message: "非法格式。只能包含数字、字母和下划线。长度范围4~16。"
+			message: "非法格式。只能包含数字、字母和下划线。长度范围4~32个字符。"
 		},
 		"ssid": {
 			method: function(val){
@@ -99,7 +115,7 @@
 						len += 3;
 					}
 				}
-				var reg = /^[a-zA-Z0-9- _.\u4e00-\u9fa5]{1,32}$/;
+				var reg = /^[a-zA-Z0-9-_.\u4e00-\u9fa5]{1,32}$/;
 				var mark = (reg.test(val)) ? true : false;
 				if (len <= 32 && mark) {
 					return true;
@@ -107,14 +123,37 @@
 					return false;
 				}
 			},
-			message: "非法格式。输入字符串长度小于32个字符,不超过十个中文。"				
+			message: "非法格式。不能为空，输入字符串长度小于32个字符，不超过十个中文。"				
+		},
+		"desc": {
+			method: function(val){
+				var len = 0;
+				for (var i=0; i<val.length; i++) {
+					var c = val.charCodeAt(i);
+					//单字节加1
+					if ((c >= 0x0001 && c <= 0x007e) || (0xff60 <= c && c <= 0xff9f)) {
+						len++;
+					}
+					else {
+						len += 3;
+					}
+				}
+				var reg = /^[a-zA-Z0-9- _.\u4e00-\u9fa5]{0,32}$/;
+				var mark = (reg.test(val)) ? true : false;
+				if (len <= 32 && mark) {
+					return true;
+				} else {
+					return false;
+				}
+			},
+			message: "非法格式。输入字符串长度小于32个字符，不超过十个中文。"				
 		},
 		"wpassword": {
 			method: function(val) {
 				var reg = /^[a-z|0-9|A-Z]{8,32}$/;
 				return (reg.test(val)) ? true : false;
 			},
-			message: "非法格式。输入数字/字母, 长度: 8~32个字符。"
+			message: "非法格式。输入数字/字母，长度: 8~32个字符。"
 		}
 	}
 
