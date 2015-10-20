@@ -31,7 +31,12 @@ function saveSubmit() {
 		"oldData": cloneData
 	}
 	cgicall('SaveLoadBalance', sobj, function(d) {
-		d.status == '0' ? alert('保存成功！') : alert('保存失败！');
+		if (d.status == 0) {
+			alert('保存成功！');
+			window.location.reload();
+		} else {
+			alert('保存失败！');
+		}
 	});
 }
 
