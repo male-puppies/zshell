@@ -120,7 +120,7 @@ function initData() {
 		if (d.status == 0) {
 			dtReloadData(oTable, dtObjToArray(d.data));
 		} else {
-			console.log(d.msg ? d.msg : "reload fail");
+			console.log(d.data ? d.data : "reload fail");
 		}
 	})
 }
@@ -169,7 +169,7 @@ function rowMove(set, name) {
 		if (d.status == 0) {
 			initData();
 		} else {
-			alert("移动失败！" + (d.msg ? d.msg : ""));
+			alert("移动失败！" + (d.data ? d.data : ""));
 		}
 	})
 }
@@ -186,7 +186,7 @@ function delopt(name){
 		if (d.status == 0) {
 			initData();
 		} else {
-			alert("删除失败！" + (d.msg ? d.msg : ""));
+			alert("删除失败！" + (d.data ? d.data : ""));
 		}
 	});
 }
@@ -214,7 +214,7 @@ function setData(){
 				initData();
 				$("#add_policy").dialog("close");
 			} else {
-				alert("添加失败！" + (d.msg ? d.msg : ""));
+				alert("添加失败！" + (d.data ? d.data : ""));
 			}
 		});
 	} else {
@@ -224,7 +224,7 @@ function setData(){
 				initData();
 				$("#add_policy").dialog("close");
 			} else {
-				alert("修改失败！" + (d.msg ? d.msg : ""));
+				alert("修改失败！" + (d.data ? d.data : ""));
 			}
 		});
 	}
