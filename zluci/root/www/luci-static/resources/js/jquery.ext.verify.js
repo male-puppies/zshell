@@ -57,6 +57,20 @@
 			},
 			message: "非法MAC格式。"
 		},
+		"dns": {
+			method: function(val) {
+				var reg = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+				
+				var arr = val.split(',');
+				for (var k = 0; k < arr.length; k++) {
+					if (!reg.test(arr[k])) {
+						return false;
+					}
+				}
+				return true;
+			},
+			message: "非法DNS格式。"
+		},
 		"num": {
 			method: function(val, from, to){
 				var reg = /^-?[0-9]\d*$/;

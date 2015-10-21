@@ -880,7 +880,7 @@ function OnLanDHCPChg() {
 	} else {
 		en = true;
 	}
-	$('#edit__ip_address,#edit__netmask,#edit__gateway').prop('disabled', en);
+	$('#edit__ip_address,#edit__netmask,#edit__gateway,#edit__dns').prop('disabled', en);
 	
 	//common editor
 	if (nodeEdit.length > 1) {
