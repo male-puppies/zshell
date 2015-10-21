@@ -450,19 +450,6 @@ function initData() {
 			
 		});
 	});
-
-	cgicall("ApmFirewareList", function(d) {
-		if (d.status == 0) {
-			var strHtml = '';
-			for (var i = 0; i < d.length; i++) {
-				if (d[i].length == 0) continue;
-				strHtml += "</li>" + d[i] + "</li>";
-			}
-			$('#ul_VerAcFirw').html(strHtml);
-		} else {
-			console.log("ApmFirewareList error " + (d.data ? d.data : ""));
-		}
-	});
 }
 
 function getRequestFilter() {
@@ -743,7 +730,7 @@ function initEvent() {
 	$('.restart').on('click', OnRestartNew); //重启AP
 	$('.upgrade').on('click', OnUpgradeFireware); //升级AP
 	$('.edit').on('click', function() { editAps(); }); //编辑
-	$('.downloadaplog').on('click', OnDownloadApLog); //下载AP日志
+	$('.downloadap').on('click', OnDownloadAp); //下载AP固件
 	$('.resetAPs').on('click', OnResetAPs); //恢复出厂配置
 	$('.deleteAPs').on('click', OnDeleteAPs); //删除
 	$('#edit__ip_distribute').on('change', OnLanDHCPChg); //DHCP分配
@@ -776,27 +763,52 @@ function OnUpgradeFireware() {
 		alert('选择要升级的AP！');
 		return;
 	}
-	$('#upgradeAP').dialog('open');
+	cgicall("ApmFirewareList", function(d) {
+		if (d.status == 0) {
+			var data = dtObjToArray(d.data),
+				strHtml = '';
+			
+			if (data.length == 0) {
+				$('#ul_VerAcFirw').html("无可用固件，请尝试下载AP固件！");
+			} else {
+				for (var i = 0; i < data.length; i++) {
+					strHtml += "<li>" + data[i] + "</li>";
+				}
+				$('#ul_VerAcFirw').html(strHtml);
+			}
+			
+			$('#upgradeAP').dialog('open');
+		} else {
+			alert("请求升级固件失败！请尝试重新加载！")
+			console.log("ApmFirewareList error " + (d.data ? d.data : ""));
+		}
+	});
 }
 
-function OnDownloadApLog() {
+function OnDownloadAp() {
 	GetSelectedAps();
 	if (nodeEdit.length < 1) {
-		alert('选择要下载日志的AP！');
+		alert('选择要下载固件的AP！');
 		return;
 	}
-	var aAPs = [];
+	var apfire = {};
 	for (var i = nodeEdit.length - 1; i >= 0; i--) {
-		aAPs.push(nodeEdit[i].mac);
+		var str = nodeEdit[i].firmware_ver
+		var s = str.substring(0, str.indexOf("."));
+		apfire[s] = "1";
 	}
-
-	cgicall('DownloadApLog', aAPs, function(d) {
+	
+	var arr = [];
+	for (var k in apfire) {
+		arr.push(k);
+	}
+	cgicall('ApmFirewareDownload', arr, function(d) {
 		if (d.status == 0) {
-			window.location.href = '/aplog.tar';
+			alert("正在下载，稍后可进行固件升级！");
 		} else {
-			alert('下载失败！');
-		}	
-	});	
+			alert("下载失败！请尝试重新加载！");
+		}
+	})
 }
 
 function OnResetAPs() {
