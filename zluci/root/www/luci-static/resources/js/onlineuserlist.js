@@ -33,13 +33,13 @@ function createDtUser() {
 					var hours = parseInt(d/60/60 - days*24);
 					var minutes = parseInt(d/60 - hours*60 - days*24);
 					if (days > 0) {
-						return days + "d" + hours + "h" + minutes + "m";
+						return days + "天" + hours + "时" + minutes + "分";
 					} else if (hours > 0) {
-						return hours +"h" + minutes + "m";
+						return hours +"时" + minutes + "分";
 					} else if (minutes > 0) {
-						return minutes + "m";
+						return minutes + "分";
 					} else {
-						return d + "s";
+						return d + "秒";
 					}
 				}
 			},

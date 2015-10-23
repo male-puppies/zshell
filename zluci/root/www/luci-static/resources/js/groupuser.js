@@ -67,11 +67,31 @@ function createDtUser() {
 			{
 				"mData": "expire",
 				"mRender": function (d, t, f) {
-			  		if (typeof d != "undefined" && d[0] == 0) {
-			  			return "永久有效"
-			  		} else {
-						var data = d[1];
-						return data.substring(0,4) + "/" + data.substring(4,6) + "/" + data.substring(6,8) + " " + data.substring(9,11) + ":" + data.substring(11,13) + ":" + data.substring(13);
+					if (typeof d != "undefined") {
+						if (d[0] == 0) {
+							return "永久有效";
+						} else {
+							var data = d[1];
+							return data.substring(0,4) + "/" + data.substring(4,6) + "/" + data.substring(6,8) + " " + data.substring(9,11) + ":" + data.substring(11,13) + ":" + data.substring(13);
+						}
+					} else {
+						return "永久有效";
+					}
+               }
+			},
+			{
+				"mData": "remain",
+				"mRender": function (d, t, f) {
+			  		if (typeof d != "undefined") {
+						if (d[0] == 0) {
+							return "永久有效";
+						} else {
+							var data = parseInt(d[1]);
+							var timearr = [parseInt(data/86400), parseInt((data%86400)/3600), parseInt((data%3600)/60)];
+							return timearr[0] + "天" + timearr[1] + "时" + timearr[2] + "分"; 
+						}
+					} else {
+						return "永久有效";
 					}
                }
 			},
@@ -223,7 +243,7 @@ function edit(that){
 	} else {
 		$("#remain").get(0).checked = false;
 	}
-	var timearr = [Math.floor(parseInt(remain1)/86400), Math.floor((parseInt(remain1)%86400)/3600), Math.floor((parseInt(remain1)%3600)/60)];
+	var timearr = [parseInt(parseInt(remain1)/86400), parseInt((parseInt(remain1)%86400)/3600), parseInt((parseInt(remain1)%3600)/60)];
 	$("#remain_t1").val(timearr[0]);
 	$("#remain_t2").val(timearr[1]);
 	$("#remain_t3").val(timearr[2]);
