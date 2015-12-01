@@ -2,6 +2,10 @@
 module("luci.controller.admin.wireless", package.seeall)
 
 function index()
+	local fs = require "nixio.fs"
+	if not fs.access("/ugw/apps/cfgmgr") then
+		return
+	end
 	entry({"admin", "wireless"}, alias("admin", "wireless", "apstatus"), _("无线管理"), 40).index = true
 	entry({"admin", "wireless", "apstatus"}, template("admin_wireless/apstatus"), _("AP管理"), 1)
 	entry({"admin", "wireless", "radiostatus"}, template("admin_wireless/radiostatus"), _("Radio状态"), 2)
