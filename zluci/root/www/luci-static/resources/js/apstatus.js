@@ -967,6 +967,7 @@ function channel_5gSet(obj) {
 		p20 = '<option value="20">20</option>',
 		p40p = '<option value="40+">40+</option>',
 		p40m = '<option value="40-">40-</option>',
+		p80 = '<option value="80">80</option>',
 		band5g = $("#edit__radio_5g__bandwidth");
 
 	if (typeof(obj) == 'object') {
@@ -985,7 +986,7 @@ function channel_5gSet(obj) {
 			band5g.html(pauto + p20 + p40p + p40m);
 			break;
 		case 'an':
-			band5g.html(pauto + p20 + p40p + p40m);
+			band5g.html(pauto + p20 + p40p + p40m + p80);
 			break;
 		default:
 			band5g.html(pauto + p20 + p40p + p40m);
